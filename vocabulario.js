@@ -38,7 +38,12 @@ const vocabulario = {
   Wake: { pronuncia: "uêque", significado: "Acordar" },
   Break: { pronuncia: "brâque", significado: "Quebrar" },
   Wait: { pronuncia: "uêt", significado: "Esperar" },
-  Start: { pronuncia: "estarte", significado: "Começar" },
+  
+  Start: [
+    { pronuncia: "estarte", significado: "Começar" },
+    { pronuncia: "estarte", significado: "Iniciar" }
+    ],
+  
   Finish: { pronuncia: "fíniche", significado: "Terminar" },
   Run: { pronuncia: "rhân", significado: "Correr" },
   Walk: { pronuncia: "uálque", significado: "Andar" },
@@ -117,3 +122,4 @@ const vocabulario = {
 };
 
 window.vocabulario = vocabulario;
+
