@@ -47,3 +47,5 @@ window.vocabulario = {
     { pronuncia: "gét", significado: "Receber" }
   ]
 };
+
+window.vocabulario = vocabulario;
