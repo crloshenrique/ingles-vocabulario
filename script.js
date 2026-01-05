@@ -3,6 +3,9 @@ const palavraBox = document.getElementById("palavra-box");
 const progressoBox = document.getElementById("progresso-box");
 const input = document.getElementById("resposta");
 const mensagemDiv = document.getElementById("mensagem");
+const traducaoBox = document.getElementById("traducao-box");
+const acertosBox = document.getElementById("acertos-box");
+const errosBox = document.getElementById("erros-box");
 
 // Recorde
 let recorde = 0;
@@ -20,6 +23,7 @@ const palavras = Object.keys(vocabulario).sort(() => Math.random() - 0.5);
 
 let i = 0;
 let acertos = 0;
+let erros = 0;
 const totalPalavras = palavras.length;
 
 // Atualizar progresso
@@ -43,6 +47,10 @@ function mostrarPalavra() {
   input.focus();
   mensagemDiv.textContent = "";
 
+  // Resetar retângulo de tradução
+  traducaoBox.textContent = "";
+  traducaoBox.style.color = "#333";
+
   atualizarProgresso();
 }
 
@@ -63,19 +71,25 @@ function responder() {
     if (resposta === dados.significado.toLowerCase()) correto = true;
   }
 
-  if (correto) {
-    acertos++;
-    i++;
-    mostrarPalavra();
-  } else {
-    let corretosText = Array.isArray(dados)
-      ? dados.map(d => d.significado).join(" / ")
-      : dados.significado;
+  // Mostrar tradução correta com cor
+  let corretosText = Array.isArray(dados)
+    ? dados.map(d => d.significado).join(" / ")
+    : dados.significado;
 
-    mensagemDiv.innerHTML = `❌ Resposta incorreta! <br>Significado correto: ${corretosText}`;
-    i++;
-    mostrarPalavra();
+  if (correto) {
+    traducaoBox.textContent = corretosText;
+    traducaoBox.style.color = "green";
+    acertos++;
+    acertosBox.textContent = acertos;
+  } else {
+    traducaoBox.textContent = corretosText;
+    traducaoBox.style.color = "red";
+    erros++;
+    errosBox.textContent = erros;
   }
+
+  i++;
+  mostrarPalavra();
 }
 
 // Finalizar
