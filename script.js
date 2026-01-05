@@ -1,53 +1,82 @@
-
-const palavras = Object.keys(vocabulario).sort(() => Math.random() - 0.5);
+let palavras = Object.keys(vocabulario).sort(() => Math.random() - 0.5);
 
 let indice = 0;
-let palavraAtual;
-let dadosAtuais;
+let acertos = 0;
+let jogoEncerrado = false;
+
+const palavraDiv = document.getElementById("palavra");
+const mensagemDiv = document.getElementById("mensagem");
+const input = document.getElementById("resposta");
 
 function mostrarPalavra() {
-  palavraAtual = palavras[indice];
-  dadosAtuais = vocabulario[palavraAtual];
+  if (indice >= palavras.length) {
+    finalizar(true);
+    return;
+  }
 
-  const pronuncia = Array.isArray(dadosAtuais)
-    ? dadosAtuais[0].pronuncia
-    : dadosAtuais.pronuncia;
+  const palavra = palavras[indice];
+  const dados = vocabulario[palavra];
+  const pronuncia = Array.isArray(dados) ? dados[0].pronuncia : dados.pronuncia;
 
-  document.getElementById("palavra").innerText =
-    `${palavraAtual} (${pronuncia})`;
-
-  document.getElementById("mensagem").innerText = "";
-  document.getElementById("resposta").value = "";
-  document.getElementById("resposta").focus();
+  palavraDiv.textContent = `${palavra} (${pronuncia})`;
+  mensagemDiv.textContent = "";
+  input.value = "";
+  input.focus();
 }
 
 function responder() {
-  const resposta = document.getElementById("resposta").value
-    .trim()
-    .toLowerCase();
+  if (jogoEncerrado) return;
 
-  let correta = false;
+  const resposta = input.value.trim().toLowerCase();
+  if (!resposta) return;
 
-  if (Array.isArray(dadosAtuais)) {
-    correta = dadosAtuais
-      .map(d => d.significado.toLowerCase())
-      .includes(resposta);
+  const palavra = palavras[indice];
+  const dados = vocabulario[palavra];
+
+  let correto = false;
+
+  if (Array.isArray(dados)) {
+    correto = dados.some(
+      d => d.significado.toLowerCase() === resposta
+    );
   } else {
-    correta = resposta === dadosAtuais.significado.toLowerCase();
+    correto = dados.significado.toLowerCase() === resposta;
   }
 
-  if (correta) {
+  if (correto) {
+    acertos++;
     indice++;
-    if (indice >= palavras.length) {
-      document.getElementById("palavra").innerText = "🎉 Fim do treino!";
-      document.getElementById("mensagem").innerText = "";
-    } else {
-      mostrarPalavra();
-    }
+    mostrarPalavra();
   } else {
-    document.getElementById("mensagem").innerText =
-      "❌ Resposta incorreta";
+    let corretas = Array.isArray(dados)
+      ? dados.map(d => d.significado).join(", ")
+      : dados.significado;
+
+    mensagemDiv.innerHTML = `❌ Resposta errada.<br>✔️ Correto: <b>${corretas}</b>`;
+    finalizar(false);
   }
 }
 
+function finalizar(completouTudo) {
+  jogoEncerrado = true;
+  input.disabled = true;
+
+  let recorde = Number(localStorage.getItem("recorde")) || 0;
+
+  if (acertos > recorde) {
+    localStorage.setItem("recorde", acertos);
+    recorde = acertos;
+  }
+
+  mensagemDiv.innerHTML += `<br><br>📊 Acertos: <b>${acertos}</b><br>🏆 Recorde: <b>${recorde}</b>`;
+
+  if (completouTudo) {
+    mensagemDiv.innerHTML =
+      `🎉 Parabéns! Você completou todas as palavras.<br>` +
+      `📊 Acertos: <b>${acertos}</b><br>` +
+      `🏆 Recorde: <b>${recorde}</b>`;
+  }
+}
+
+// iniciar
 mostrarPalavra();
