@@ -3,6 +3,8 @@ const palavraBox = document.getElementById("palavra");
 const input = document.getElementById("resposta");
 const mensagemDiv = document.getElementById("mensagem");
 const traducaoBox = document.getElementById("traducao-box");
+const acertosBox = document.getElementById("acertos-box");
+const errosBox = document.getElementById("erros-box");
 
 // Recorde
 let recorde = 0;
@@ -20,6 +22,7 @@ const palavras = Object.keys(vocabulario).sort(() => Math.random() - 0.5);
 
 let i = 0;
 let acertos = 0;
+let erros = 0;
 
 // Mostrar a palavra atual
 function mostrarPalavra() {
@@ -37,7 +40,7 @@ function mostrarPalavra() {
   input.focus();
   mensagemDiv.textContent = "";
 
-  // Resetar retângulo de tradução para vazio
+  // Resetar retângulo de tradução
   traducaoBox.textContent = "";
   traducaoBox.style.color = "#333";
 
@@ -70,9 +73,12 @@ function responder() {
     traducaoBox.textContent = corretosText;
     traducaoBox.style.color = "green";
     acertos++;
+    acertosBox.textContent = acertos;
   } else {
     traducaoBox.textContent = corretosText;
     traducaoBox.style.color = "red";
+    erros++;
+    errosBox.textContent = erros;
   }
 
   i++;
@@ -106,7 +112,7 @@ input.addEventListener("keydown", function(event) {
 
 // Progresso
 function atualizarProgresso() {
-  mensagemDiv.textContent = `Palavra ${i+1} de ${palavras.length} | Acertos: ${acertos}`;
+  mensagemDiv.textContent = `Palavra ${i+1} de ${palavras.length}`;
 }
 
 // Começa o jogo
