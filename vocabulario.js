@@ -1,4 +1,4 @@
-const vocabulario = {
+window.vocabulario = {
   can: { pronuncia: "kén", significado: "Poder" },
   tell: { pronuncia: "tél", significado: "Contar" },
   go: { pronuncia: "gô", significado: "Ir" },
