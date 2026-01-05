@@ -1,10 +1,8 @@
 // Elementos
-const palavraBox = document.getElementById("palavra");
+const palavraBox = document.getElementById("palavra-box");
+const progressoBox = document.getElementById("progresso-box");
 const input = document.getElementById("resposta");
 const mensagemDiv = document.getElementById("mensagem");
-const traducaoBox = document.getElementById("traducao-box");
-const acertosBox = document.getElementById("acertos-box");
-const errosBox = document.getElementById("erros-box");
 
 // Recorde
 let recorde = 0;
@@ -22,9 +20,14 @@ const palavras = Object.keys(vocabulario).sort(() => Math.random() - 0.5);
 
 let i = 0;
 let acertos = 0;
-let erros = 0;
+const totalPalavras = palavras.length;
 
-// Mostrar a palavra atual
+// Atualizar progresso
+function atualizarProgresso() {
+  progressoBox.textContent = `Acertos: ${acertos} / ${totalPalavras}`;
+}
+
+// Mostrar palavra atual
 function mostrarPalavra() {
   if (i >= palavras.length) {
     finalizar();
@@ -40,14 +43,10 @@ function mostrarPalavra() {
   input.focus();
   mensagemDiv.textContent = "";
 
-  // Resetar retângulo de tradução
-  traducaoBox.textContent = "";
-  traducaoBox.style.color = "#333";
-
   atualizarProgresso();
 }
 
-// Função responder
+// Responder
 function responder() {
   const palavra = palavras[i];
   const dados = vocabulario[palavra];
@@ -64,31 +63,26 @@ function responder() {
     if (resposta === dados.significado.toLowerCase()) correto = true;
   }
 
-  // Mostrar tradução correta com cor
-  let corretosText = Array.isArray(dados)
-    ? dados.map(d => d.significado).join(" / ")
-    : dados.significado;
-
   if (correto) {
-    traducaoBox.textContent = corretosText;
-    traducaoBox.style.color = "green";
     acertos++;
-    acertosBox.textContent = acertos;
+    i++;
+    mostrarPalavra();
   } else {
-    traducaoBox.textContent = corretosText;
-    traducaoBox.style.color = "red";
-    erros++;
-    errosBox.textContent = erros;
-  }
+    let corretosText = Array.isArray(dados)
+      ? dados.map(d => d.significado).join(" / ")
+      : dados.significado;
 
-  i++;
-  mostrarPalavra();
+    mensagemDiv.innerHTML = `❌ Resposta incorreta! <br>Significado correto: ${corretosText}`;
+    i++;
+    mostrarPalavra();
+  }
 }
 
 // Finalizar
 function finalizar() {
   palavraBox.textContent = "✅ Teste finalizado!";
   input.disabled = true;
+  atualizarProgresso();
 
   // Atualiza recorde local
   if (acertos > recorde) {
@@ -109,11 +103,6 @@ input.addEventListener("keydown", function(event) {
     responder();
   }
 });
-
-// Progresso
-function atualizarProgresso() {
-  mensagemDiv.textContent = `Palavra ${i+1} de ${palavras.length}`;
-}
 
 // Começa o jogo
 mostrarPalavra();
