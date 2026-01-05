@@ -6,9 +6,6 @@ const mensagemDiv = document.getElementById("mensagem");
 const traducaoBox = document.getElementById("traducao-box");
 const acertosBox = document.getElementById("acertos-box");
 const errosBox = document.getElementById("erros-box");
-const menuBox = document.getElementById("menu-box");
-const botaoIngles = document.getElementById("modo-ingles");
-const botaoPortugues = document.getElementById("modo-portugues");
 
 // Recorde
 let recorde = 0;
@@ -28,11 +25,10 @@ let i = 0;
 let acertos = 0;
 let erros = 0;
 const totalPalavras = palavras.length;
-let modo = null; // "ingles" ou "portugues"
 
 // Atualizar progresso
 function atualizarProgresso() {
-  progressoBox.textContent = `Acertos: ${acertos} / ${totalPalavras}`;
+  progressoBox.textContent = Acertos: ${acertos} / ${totalPalavras};
   acertosBox.textContent = acertos;
   errosBox.textContent = erros;
 }
@@ -48,20 +44,9 @@ function mostrarPalavra() {
   const dados = vocabulario[palavra];
   const pronuncia = Array.isArray(dados) ? dados[0].pronuncia : dados.pronuncia;
 
-  let palavraExibir;
-  if (modo === "ingles") {
-    // Palavra em inglês com pronúncia
-    palavraExibir = `${palavra.charAt(0).toUpperCase() + palavra.slice(1)} (${pronuncia})`;
-  } else {
-    // Palavra em português, sem pronúncia
-    if (Array.isArray(dados)) {
-      palavraExibir = dados.map(d => d.significado).join(" / ");
-    } else {
-      palavraExibir = dados.significado;
-    }
-  }
-
-  palavraBox.textContent = palavraExibir;
+  // Palavra em inglês com inicial maiúscula
+  const palavraExibir = palavra.charAt(0).toUpperCase() + palavra.slice(1);
+  palavraBox.textContent = ${palavraExibir} (${pronuncia});
   palavraBox.style.color = "white";
 
   input.value = "";
@@ -88,35 +73,17 @@ function responder() {
   let correto = false;
   let significadosArray = [];
 
-  // Determinar significado esperado dependendo do modo
-  if (modo === "ingles") {
-    // Você digita a tradução em português
-    if (Array.isArray(dados)) {
-      significadosArray = dados.map(d => d.significado);
-      const significadosLower = significadosArray.map(d => d.toLowerCase());
-      if (significadosLower.includes(resposta)) correto = true;
-    } else {
-      significadosArray = [dados.significado];
-      if (resposta === dados.significado.toLowerCase()) correto = true;
-    }
+  if (Array.isArray(dados)) {
+    significadosArray = dados.map(d => d.significado);
+    const significadosLower = significadosArray.map(d => d.toLowerCase());
+    if (significadosLower.includes(resposta)) correto = true;
   } else {
-    // Você digita a tradução em inglês
-    if (Array.isArray(dados)) {
-      significadosArray = dados.map(d => d.significado);
-      const palavrasLower = dados.map(d => Object.keys(vocabulario).find(k => vocabulario[k] === d).toLowerCase());
-      if (palavrasLower.includes(resposta)) correto = true;
-    } else {
-      significadosArray = [dados.significado];
-      if (resposta === palavra.toLowerCase()) correto = true;
-    }
+    significadosArray = [dados.significado];
+    if (resposta === dados.significado.toLowerCase()) correto = true;
   }
 
   // Mostrar tradução correta com cor
-  if (modo === "ingles") {
-    traducaoBox.textContent = significadosArray.join(" / ");
-  } else {
-    traducaoBox.textContent = palavra.charAt(0).toUpperCase() + palavra.slice(1);
-  }
+  traducaoBox.textContent = significadosArray.join(" / ");
   traducaoBox.style.color = correto ? "green" : "red";
 
   // Atualizar acertos e erros
@@ -130,7 +97,7 @@ function responder() {
   atualizarProgresso();
 
   // Pequeno delay para permitir ver a tradução antes de ir para a próxima palavra
-  setTimeout(mostrarPalavra, 700);
+  setTimeout(mostrarPalavra, 1400);
 }
 
 // Finalizar
@@ -146,9 +113,9 @@ function finalizar() {
       method: "POST",
       body: String(acertos)
     });
-    mensagemDiv.innerHTML = `<br>🏆 Novo recorde! Acertos: ${acertos}`;
+    mensagemDiv.innerHTML = <br>🏆 Novo recorde! Acertos: ${acertos};
   } else {
-    mensagemDiv.innerHTML = `<br>Você acertou ${acertos} palavras. Seu recorde: ${recorde}`;
+    mensagemDiv.innerHTML = <br>Você acertou ${acertos} palavras. Seu recorde: ${recorde};
   }
 }
 
@@ -159,12 +126,5 @@ input.addEventListener("keydown", function(event) {
   }
 });
 
-// Selecionar modo
-botaoIngles.addEventListener("click", () => iniciarJogo("ingles"));
-botaoPortugues.addEventListener("click", () => iniciarJogo("portugues"));
-
-function iniciarJogo(selecionado) {
-  modo = selecionado;
-  menuBox.style.display = "none";
-  mostrarPalavra();
-}
+// Começa o jogo
+mostrarPalavra();
