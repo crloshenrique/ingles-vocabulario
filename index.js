@@ -1,0 +1,85 @@
+const fs = require("fs");
+const readline = require("readline");
+const vocabulario = require("./vocabulario");
+
+const arquivo = "recorde.txt";
+
+// leitura do recorde
+let recorde = 0;
+try {
+  recorde = parseInt(fs.readFileSync(arquivo, "utf-8"));
+  if (isNaN(recorde)) recorde = 0;
+} catch {
+  recorde = 0;
+}
+
+// embaralhar palavras
+const palavras = Object.keys(vocabulario).sort(() => Math.random() - 0.5);
+
+let i = 0;
+let acertos = 0;
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+function perguntar() {
+  if (i >= palavras.length) {
+    finalizar();
+    return;
+  }
+
+  const palavra = palavras[i];
+  const dados = vocabulario[palavra];
+
+  const pronuncia = Array.isArray(dados)
+    ? dados[0].pronuncia
+    : dados.pronuncia;
+
+  console.log(`\n${palavra} (${pronuncia})`);
+
+  rl.question("Digite a tradução: ", (resposta) => {
+    resposta = resposta.trim().toLowerCase();
+
+    if (Array.isArray(dados)) {
+      const significados = dados.map(d => d.significado.toLowerCase());
+
+      if (significados.includes(resposta)) {
+        acertos++;
+        i++;
+        perguntar();
+      } else {
+        console.log("\n❌ Resposta incorreta.");
+        console.log("Significados corretos:");
+        dados.forEach(d => console.log("-", d.significado));
+        finalizar();
+      }
+    } else {
+      if (resposta === dados.significado.toLowerCase()) {
+        acertos++;
+        i++;
+        perguntar();
+      } else {
+        console.log("\n❌ Resposta incorreta.");
+        console.log("Significado correto:", dados.significado);
+        finalizar();
+      }
+    }
+  });
+}
+
+function finalizar() {
+  console.log(`\nVocê acertou ${acertos} palavras hoje.`);
+
+  if (acertos > recorde) {
+    fs.writeFileSync(arquivo, String(acertos));
+    console.log("🏆 Novo recorde!");
+  } else {
+    console.log("Seu recorde atual é:", recorde);
+  }
+
+  rl.close();
+}
+
+perguntar();
