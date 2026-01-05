@@ -26,9 +26,11 @@ let acertos = 0;
 let erros = 0;
 const totalPalavras = palavras.length;
 
-// Atualizar progresso
+// Atualizar progresso e contadores
 function atualizarProgresso() {
   progressoBox.textContent = `Acertos: ${acertos} / ${totalPalavras}`;
+  acertosBox.textContent = acertos;
+  errosBox.textContent = erros;
 }
 
 // Mostrar palavra atual
@@ -46,8 +48,6 @@ function mostrarPalavra() {
   input.value = "";
   input.focus();
   mensagemDiv.textContent = "";
-
-  // Resetar retângulo de tradução
   traducaoBox.textContent = "";
   traducaoBox.style.color = "#333";
 
@@ -63,33 +63,32 @@ function responder() {
   if (!resposta) return;
 
   let correto = false;
+  let significadosArray = [];
 
   if (Array.isArray(dados)) {
-    const significados = dados.map(d => d.significado.toLowerCase());
-    if (significados.includes(resposta)) correto = true;
+    significadosArray = dados.map(d => d.significado);
+    const significadosLower = significadosArray.map(d => d.toLowerCase());
+    if (significadosLower.includes(resposta)) correto = true;
   } else {
+    significadosArray = [dados.significado];
     if (resposta === dados.significado.toLowerCase()) correto = true;
   }
 
-  // Mostrar tradução correta com cor
-  let corretosText = Array.isArray(dados)
-    ? dados.map(d => d.significado).join(" / ")
-    : dados.significado;
+  // Mostrar tradução correta
+  traducaoBox.textContent = significadosArray.join(" / ");
+  traducaoBox.style.color = correto ? "#4CAF50" : "#f44336";
 
   if (correto) {
-    traducaoBox.textContent = corretosText;
-    traducaoBox.style.color = "green";
     acertos++;
-    acertosBox.textContent = acertos;
   } else {
-    traducaoBox.textContent = corretosText;
-    traducaoBox.style.color = "red";
     erros++;
-    errosBox.textContent = erros;
   }
 
   i++;
-  mostrarPalavra();
+  atualizarProgresso();
+
+  // Mostrar próxima palavra com pequeno delay para ver a tradução
+  setTimeout(mostrarPalavra, 500);
 }
 
 // Finalizar
@@ -105,9 +104,9 @@ function finalizar() {
       method: "POST",
       body: String(acertos)
     });
-    mensagemDiv.innerHTML += `<br>🏆 Novo recorde! Acertos: ${acertos}`;
+    mensagemDiv.innerHTML = `<br>🏆 Novo recorde! Acertos: ${acertos}`;
   } else {
-    mensagemDiv.innerHTML += `<br>Você acertou ${acertos} palavras. Seu recorde: ${recorde}`;
+    mensagemDiv.innerHTML = `<br>Você acertou ${acertos} palavras. Seu recorde: ${recorde}`;
   }
 }
 
