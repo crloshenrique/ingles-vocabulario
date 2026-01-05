@@ -22,6 +22,39 @@
       text-align: center;
     }
 
+    /* Menu inicial */
+    #menu-inicial {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    #menu-titulo {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .botao-modo {
+      width: 150px;
+      padding: 15px;
+      font-size: 16px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      background-color: #ff7f50;
+      color: white;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: background-color 0.3s;
+    }
+
+    .botao-modo:hover {
+      background-color: #ff6333;
+    }
+
+    /* Retângulo da palavra */
     #palavra-box {
       background-color: #ff7f50;
       color: white;
@@ -37,6 +70,7 @@
       align-items: center;
     }
 
+    /* Retângulo do progresso */
     #progresso-box {
       background-color: #333;
       color: #fff;
@@ -47,45 +81,11 @@
       margin-bottom: 20px;
     }
 
-    #resposta {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      margin-bottom: 5px; /* diminuído para aproximar dos quadrados */
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      margin-bottom: 5px; /* diminuído para aproximar dos quadrados */
-      border-radius: 8px;
-      cursor: pointer;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-
-    #mensagem {
-      font-size: 16px;
-      min-height: 20px;
-      margin-bottom: 2px; /* diminuído para aproximar dos quadrados */
-      color: #333;
-    }
-
     /* Retângulo da tradução */
     #traducao-box {
       background-color: #fff;
       color: #333;
-      font-size: 24px;
+      font-size: 24px; /* maior e negrito */
       font-weight: bold;
       padding: 12px 20px;
       border-radius: 12px;
@@ -98,23 +98,49 @@
       transition: color 0.3s;
     }
 
-    /* Contadores de acertos/erros */
-    #contador-container {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 2px; /* mais próximo do botão */
+    /* Input e botão responder */
+    #resposta {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
     }
 
-    #acertos-box, #erros-box {
-      flex: 1;
-      text-align: center;
-      font-size: 20px;
-      font-weight: bold;
+    #botao-responder {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      transition: background-color 0.3s;
+    }
+
+    #botao-responder:hover {
+      background-color: #45a049;
+    }
+
+    /* Acertos e erros lado a lado */
+    #resultado-boxes {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .resultado-box {
+      width: 48%;
       padding: 12px 0;
       border-radius: 12px;
+      font-size: 20px;
+      font-weight: bold;
       color: white;
-      margin: 0 5px;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
     }
 
     #acertos-box {
@@ -125,49 +151,47 @@
       background-color: #f44336;
     }
 
+    /* Mensagem final */
+    #mensagem {
+      font-size: 16px;
+      min-height: 20px;
+      color: #333;
+    }
   </style>
 </head>
 <body>
 
   <div id="container">
 
-    <!-- Retângulo da palavra -->
-    <div id="palavra-box">Carregando...</div>
+    <!-- Menu inicial -->
+    <div id="menu-inicial">
+      <div id="menu-titulo">Responder em:</div>
+      <div style="display:flex; gap:20px;">
+        <button class="botao-modo" id="modo-ingles">Inglês</button>
+        <button class="botao-modo" id="modo-portugues">Português</button>
+      </div>
+    </div>
 
-    <!-- Retângulo do progresso -->
-    <div id="progresso-box">Acertos: 0 / 0</div>
+    <!-- Container do treino, oculto inicialmente -->
+    <div id="treino-container" style="display:none;">
+      <div id="palavra-box">Carregando...</div>
+      <div id="progresso-box">Acertos: 0 / 0</div>
+      <div id="traducao-box"></div>
+      <input id="resposta" type="text" placeholder="Digite a tradução" autocomplete="off">
+      <button id="botao-responder">Responder</button>
 
-    <!-- Input -->
-    <input
-      id="resposta"
-      type="text"
-      placeholder="Digite a tradução"
-      autocomplete="off"
-    >
+      <div id="resultado-boxes">
+        <div id="acertos-box" class="resultado-box">0</div>
+        <div id="erros-box" class="resultado-box">0</div>
+      </div>
 
-    <!-- Retângulo da tradução correta -->
-    <div id="traducao-box"></div>
-
-    <!-- Botão -->
-    <button onclick="responder()">Responder</button>
-
-    <!-- Mensagem -->
-    <div id="mensagem"></div>
-
-    <!-- Contadores de acertos/erros -->
-    <div id="contador-container">
-      <div id="acertos-box">0</div>
-      <div id="erros-box">0</div>
+      <div id="mensagem"></div>
     </div>
 
   </div>
 
-  <!-- Scripts -->
   <script src="vocabulario.js"></script>
   <script src="script.js"></script>
 
 </body>
 </html>
-
-
-
