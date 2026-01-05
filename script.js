@@ -97,7 +97,7 @@ function responder() {
   atualizarProgresso();
 
   // Pequeno delay para permitir ver a tradução antes de ir para a próxima palavra
-  setTimeout(mostrarPalavra, 2000);
+  setTimeout(mostrarPalavra, 1400);
 }
 
 // Finalizar
