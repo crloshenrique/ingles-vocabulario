@@ -44,7 +44,10 @@ const vocabulario = {
     { pronuncia: "estarte", significado: "Iniciar" }
     ],
   
-  Finish: { pronuncia: "fíniche", significado: "Terminar" },
+  Finish: [
+    { pronuncia: "fíniche", significado: "Terminar" },
+    { pronuncia: "fíniche", significado: "Finalizar" }
+    ],
   Run: { pronuncia: "rhân", significado: "Correr" },
   Walk: { pronuncia: "uálque", significado: "Andar" },
   Believe: { pronuncia: "belíve", significado: "Acreditar" },
@@ -122,4 +125,5 @@ const vocabulario = {
 };
 
 window.vocabulario = vocabulario;
+
 
