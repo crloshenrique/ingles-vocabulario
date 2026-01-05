@@ -8,52 +8,102 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 20px;
-      max-width: 400px;
-      margin: auto;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
 
-    .palavra {
-      font-size: 22px;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
-
-    input {
+    #container {
       width: 100%;
-      padding: 10px;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    #palavra-box {
+      background-color: #ff7f50; /* laranja coral */
+      color: white;
+      font-size: 2rem;
+      font-weight: bold;
+      padding: 40px 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      margin-bottom: 20px;
+      min-height: 80px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #progresso-box {
+      background-color: #333;
+      color: #fff;
+      font-size: 1.2rem;
+      padding: 12px 20px;
+      border-radius: 10px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+      margin-bottom: 20px;
+    }
+
+    #resposta {
+      width: 100%;
+      padding: 12px;
       font-size: 16px;
-      margin-top: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
     }
 
     button {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       font-size: 16px;
-      margin-top: 10px;
+      margin-bottom: 15px;
+      border-radius: 8px;
       cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
     }
 
     #mensagem {
-      margin-top: 15px;
       font-size: 16px;
+      min-height: 20px;
+      margin-bottom: 10px;
+      color: #333;
     }
   </style>
 </head>
 <body>
 
-  <div class="palavra" id="palavra">Carregando...</div>
+  <div id="container">
 
-  <input
-    id="resposta"
-    type="text"
-    placeholder="Digite a tradução"
-    autocomplete="off"
-  >
+    <!-- Retângulo da palavra -->
+    <div id="palavra-box">Carregando...</div>
 
-  <button onclick="responder()">Responder</button>
+    <!-- Retângulo do progresso -->
+    <div id="progresso-box">Acertos: 0 / 0</div>
 
-  <div id="mensagem"></div>
+    <!-- Input e botão -->
+    <input
+      id="resposta"
+      type="text"
+      placeholder="Digite a tradução"
+      autocomplete="off"
+    >
+    <button onclick="responder()">Responder</button>
+
+    <div id="mensagem"></div>
+
+  </div>
 
   <!-- IMPORTANTE: ordem certa -->
   <script src="vocabulario.js"></script>
