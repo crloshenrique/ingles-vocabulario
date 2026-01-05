@@ -26,7 +26,7 @@ let acertos = 0;
 let erros = 0;
 const totalPalavras = palavras.length;
 
-// Atualizar progresso e contadores
+// Atualizar progresso
 function atualizarProgresso() {
   progressoBox.textContent = `Acertos: ${acertos} / ${totalPalavras}`;
   acertosBox.textContent = acertos;
@@ -44,10 +44,16 @@ function mostrarPalavra() {
   const dados = vocabulario[palavra];
   const pronuncia = Array.isArray(dados) ? dados[0].pronuncia : dados.pronuncia;
 
-  palavraBox.textContent = `${palavra} (${pronuncia})`;
+  // Palavra em inglês com inicial maiúscula
+  const palavraExibir = palavra.charAt(0).toUpperCase() + palavra.slice(1);
+  palavraBox.textContent = `${palavraExibir} (${pronuncia})`;
+  palavraBox.style.color = "white";
+
   input.value = "";
   input.focus();
   mensagemDiv.textContent = "";
+
+  // Resetar retângulo de tradução
   traducaoBox.textContent = "";
   traducaoBox.style.color = "#333";
 
@@ -56,6 +62,8 @@ function mostrarPalavra() {
 
 // Responder
 function responder() {
+  if (i >= palavras.length) return;
+
   const palavra = palavras[i];
   const dados = vocabulario[palavra];
   const resposta = input.value.trim().toLowerCase();
@@ -74,10 +82,11 @@ function responder() {
     if (resposta === dados.significado.toLowerCase()) correto = true;
   }
 
-  // Mostrar tradução correta
+  // Mostrar tradução correta com cor
   traducaoBox.textContent = significadosArray.join(" / ");
-  traducaoBox.style.color = correto ? "#4CAF50" : "#f44336";
+  traducaoBox.style.color = correto ? "green" : "red";
 
+  // Atualizar acertos e erros
   if (correto) {
     acertos++;
   } else {
@@ -87,17 +96,17 @@ function responder() {
   i++;
   atualizarProgresso();
 
-  // Mostrar próxima palavra com pequeno delay para ver a tradução
-  setTimeout(mostrarPalavra, 500);
+  // Pequeno delay para permitir ver a tradução antes de ir para a próxima palavra
+  setTimeout(mostrarPalavra, 700);
 }
 
 // Finalizar
 function finalizar() {
   palavraBox.textContent = "✅ Teste finalizado!";
   input.disabled = true;
+  traducaoBox.textContent = "";
   atualizarProgresso();
 
-  // Atualiza recorde local
   if (acertos > recorde) {
     recorde = acertos;
     fetch("recorde.txt", {
