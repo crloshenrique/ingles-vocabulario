@@ -49,3 +49,4 @@ const vocabulario = {
 };
 
 module.exports = vocabulario;
+
