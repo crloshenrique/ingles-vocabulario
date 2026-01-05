@@ -47,6 +47,3 @@ const vocabulario = {
     { pronuncia: "gét", significado: "Receber" }
   ]
 };
-
-
-
