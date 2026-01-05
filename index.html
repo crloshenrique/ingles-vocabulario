@@ -22,7 +22,6 @@
       text-align: center;
     }
 
-    /* Retângulo da palavra principal */
     #palavra-box {
       background-color: #ff7f50;
       color: white;
@@ -38,7 +37,6 @@
       align-items: center;
     }
 
-    /* Retângulo da tradução correta */
     #traducao-box {
       background-color: #fff;
       color: #333;
@@ -55,7 +53,6 @@
       transition: color 0.3s;
     }
 
-    /* Retângulo do progresso */
     #progresso-box {
       background-color: #333;
       color: #fff;
@@ -66,7 +63,6 @@
       margin-bottom: 20px;
     }
 
-    /* Quadrados de acertos e erros */
     #acertos-box, #erros-box {
       width: 48%;
       padding: 12px;
@@ -116,23 +112,14 @@
       color: #333;
     }
 
-    /* Menu inicial */
+    /* Menu inicial pequeno e simples */
     #menu-box {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
       margin-bottom: 20px;
     }
 
-    #menu-box h2 {
-      margin-bottom: 15px;
-    }
-
-    .modo-btn {
+    #menu-box button {
       width: 48%;
       margin: 0 1%;
-      display: inline-block;
     }
   </style>
 </head>
@@ -142,9 +129,8 @@
 
     <!-- Menu inicial -->
     <div id="menu-box">
-      <h2>Responder em:</h2>
-      <button id="modo-ingles" class="modo-btn">Inglês</button>
-      <button id="modo-portugues" class="modo-btn">Português</button>
+      <button id="modo-ingles">Inglês</button>
+      <button id="modo-portugues">Português</button>
     </div>
 
     <!-- Retângulo da palavra -->
@@ -173,7 +159,6 @@
 
   </div>
 
-  <!-- Scripts carregados no final do body -->
   <script src="vocabulario.js"></script>
   <script src="script.js"></script>
 
