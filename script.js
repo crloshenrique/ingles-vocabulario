@@ -28,7 +28,7 @@ const totalPalavras = palavras.length;
 
 // Atualizar progresso
 function atualizarProgresso() {
-  progressoBox.textContent = Acertos: ${acertos} / ${totalPalavras};
+  progressoBox.textContent = `Acertos: ${acertos} / ${totalPalavras}`;
   acertosBox.textContent = acertos;
   errosBox.textContent = erros;
 }
@@ -46,7 +46,7 @@ function mostrarPalavra() {
 
   // Palavra em inglês com inicial maiúscula
   const palavraExibir = palavra.charAt(0).toUpperCase() + palavra.slice(1);
-  palavraBox.textContent = ${palavraExibir} (${pronuncia});
+  palavraBox.textContent = `${palavraExibir} (${pronuncia})`;
   palavraBox.style.color = "white";
 
   input.value = "";
@@ -113,9 +113,9 @@ function finalizar() {
       method: "POST",
       body: String(acertos)
     });
-    mensagemDiv.innerHTML = <br>🏆 Novo recorde! Acertos: ${acertos};
+    mensagemDiv.innerHTML = `<br>🏆 Novo recorde! Acertos: ${acertos}`;
   } else {
-    mensagemDiv.innerHTML = <br>Você acertou ${acertos} palavras. Seu recorde: ${recorde};
+    mensagemDiv.innerHTML = `<br>Você acertou ${acertos} palavras. Seu recorde: ${recorde}`;
   }
 }
 
