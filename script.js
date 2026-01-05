@@ -1,5 +1,6 @@
 // Elementos
-const palavraDiv = document.getElementById("palavra");
+const palavraBox = document.getElementById("palavra-box");
+const progressoBox = document.getElementById("progresso-box");
 const input = document.getElementById("resposta");
 const mensagemDiv = document.getElementById("mensagem");
 
@@ -19,8 +20,14 @@ const palavras = Object.keys(vocabulario).sort(() => Math.random() - 0.5);
 
 let i = 0;
 let acertos = 0;
+const totalPalavras = palavras.length;
 
-// Mostrar a primeira palavra
+// Atualizar progresso
+function atualizarProgresso() {
+  progressoBox.textContent = `Acertos: ${acertos} / ${totalPalavras}`;
+}
+
+// Mostrar palavra atual
 function mostrarPalavra() {
   if (i >= palavras.length) {
     finalizar();
@@ -31,10 +38,12 @@ function mostrarPalavra() {
   const dados = vocabulario[palavra];
   const pronuncia = Array.isArray(dados) ? dados[0].pronuncia : dados.pronuncia;
 
-  palavraDiv.textContent = `${palavra} (${pronuncia})`;
+  palavraBox.textContent = `${palavra} (${pronuncia})`;
   input.value = "";
   input.focus();
   mensagemDiv.textContent = "";
+
+  atualizarProgresso();
 }
 
 // Responder
@@ -64,14 +73,16 @@ function responder() {
       : dados.significado;
 
     mensagemDiv.innerHTML = `❌ Resposta incorreta! <br>Significado correto: ${corretosText}`;
-    finalizar();
+    i++;
+    mostrarPalavra();
   }
 }
 
 // Finalizar
 function finalizar() {
-  palavraDiv.textContent = "✅ Teste finalizado!";
+  palavraBox.textContent = "✅ Teste finalizado!";
   input.disabled = true;
+  atualizarProgresso();
 
   // Atualiza recorde local
   if (acertos > recorde) {
