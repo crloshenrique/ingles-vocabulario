@@ -2,29 +2,12 @@
 // ELEMENTOS
 // ===============================
 const palavraBox = document.getElementById("palavra-box");
-const progressoBox = document.getElementById("progresso-box");
-const input = document.getElementById("resposta");
-const mensagemDiv = document.getElementById("mensagem");
-const traducaoBox = document.getElementById("traducao-box");
+const opcoesContainer = document.getElementById("opcoes-container");
 const acertosBox = document.getElementById("acertos-box");
 const errosBox = document.getElementById("erros-box");
 
 // ===============================
-// RECORDE
-// ===============================
-let recorde = 0;
-
-fetch("recorde.txt")
-  .then(res => res.text())
-  .then(texto => {
-    recorde = parseInt(texto) || 0;
-  })
-  .catch(() => {
-    recorde = 0;
-  });
-
-// ===============================
-// VOCABULÁRIO (arquivo txt)
+// VOCABULÁRIO
 // ===============================
 let vocabulario = {};
 let palavras = [];
@@ -38,24 +21,21 @@ fetch("vocabulario.txt")
       linha = linha.trim();
       if (!linha || !linha.includes("=")) return;
 
-      // Ex: Wait (uêt) = Esperar / Aguardar
       const [esquerda, direita] = linha.split("=");
 
-      // Palavra e pronúncia
       const match = esquerda.match(/^(.+?)(?:\s*\((.+?)\))?$/);
       if (!match) return;
 
       const palavra = match[1].trim().toLowerCase();
       const pronuncia = match[2] ? match[2].trim() : "";
 
-      // Significados
       const significados = direita
         .split("/")
         .map(s => s.trim());
 
       vocabulario[palavra] = significados.map(sig => ({
         significado: sig,
-        pronuncia: pronuncia
+        pronuncia
       }));
     });
 
@@ -63,7 +43,7 @@ fetch("vocabulario.txt")
   });
 
 // ===============================
-// VARIÁVEIS DO JOGO
+// VARIÁVEIS
 // ===============================
 let i = 0;
 let acertos = 0;
@@ -77,17 +57,15 @@ function iniciarJogo() {
   mostrarPalavra();
 }
 
-// Atualizar progresso
-function atualizarProgresso() {
-  progressoBox.textContent = `Acertos: ${acertos} / ${palavras.length}`;
+function atualizarContadores() {
   acertosBox.textContent = acertos;
   errosBox.textContent = erros;
 }
 
-// Mostrar palavra
 function mostrarPalavra() {
   if (i >= palavras.length) {
-    finalizar();
+    palavraBox.textContent = "Teste finalizado!";
+    opcoesContainer.innerHTML = "";
     return;
   }
 
@@ -102,72 +80,67 @@ function mostrarPalavra() {
     ? `${palavraExibir} (${pronuncia})`
     : palavraExibir;
 
-  palavraBox.style.color = "white";
-
-  input.value = "";
-  input.focus();
-  mensagemDiv.textContent = "";
-
-  traducaoBox.textContent = "";
-  traducaoBox.style.color = "#333";
-
-  atualizarProgresso();
+  opcoesContainer.innerHTML = "";
+  criarOpcoes(palavra);
+  atualizarContadores();
 }
 
-// Responder
-function responder() {
-  if (i >= palavras.length) return;
+function criarOpcoes(palavraAtual) {
+  const dados = vocabulario[palavraAtual];
 
-  const palavra = palavras[i];
-  const dados = vocabulario[palavra];
-  const resposta = input.value.trim().toLowerCase();
+  // escolhe UMA tradução correta aleatória
+  const corretaObj = dados[Math.floor(Math.random() * dados.length)];
+  const correta = corretaObj.significado;
 
-  if (!resposta) return;
+  let opcoes = [correta];
 
-  const significados = dados.map(d => d.significado);
-  const significadosLower = significados.map(s => s.toLowerCase());
+  // 4 opções
+  while (opcoes.length < 4) {
+    const palavraAleatoria =
+      palavras[Math.floor(Math.random() * palavras.length)];
 
-  const correto = significadosLower.includes(resposta);
+    if (palavraAleatoria === palavraAtual) continue;
 
-  traducaoBox.textContent = significados.join(" / ");
-  traducaoBox.style.color = correto ? "green" : "red";
+    const traducoes = vocabulario[palavraAleatoria];
+    const errada =
+      traducoes[Math.floor(Math.random() * traducoes.length)].significado;
 
-  if (correto) {
-    acertos++;
-  } else {
-    erros++;
+    if (!opcoes.includes(errada)) {
+      opcoes.push(errada);
+    }
   }
 
-  i++;
-  atualizarProgresso();
+  opcoes.sort(() => Math.random() - 0.5);
 
-  setTimeout(mostrarPalavra, 1400);
+  opcoes.forEach(opcao => {
+    const btn = document.createElement("button");
+    btn.textContent = opcao;
+    btn.className = "opcao-btn";
+
+    btn.onclick = () => {
+      const botoes = document.querySelectorAll(".opcao-btn");
+      botoes.forEach(b => b.disabled = true);
+
+      if (opcao === correta) {
+        btn.classList.add("correta");
+        acertos++;
+      } else {
+        btn.classList.add("errada");
+        erros++;
+
+        botoes.forEach(b => {
+          if (b.textContent === correta) {
+            b.classList.add("correta");
+          }
+        });
+      }
+
+      atualizarContadores();
+      i++;
+
+      setTimeout(mostrarPalavra, 1400);
+    };
+
+    opcoesContainer.appendChild(btn);
+  });
 }
-
-// Finalizar
-function finalizar() {
-  palavraBox.textContent = "✅ Teste finalizado!";
-  input.disabled = true;
-  traducaoBox.textContent = "";
-  atualizarProgresso();
-
-  if (acertos > recorde) {
-    recorde = acertos;
-    fetch("recorde.txt", {
-      method: "POST",
-      body: String(acertos)
-    });
-    mensagemDiv.innerHTML = `<br>🏆 Novo recorde! Acertos: ${acertos}`;
-  } else {
-    mensagemDiv.innerHTML = `<br>Você acertou ${acertos} palavras. Seu recorde: ${recorde}`;
-  }
-}
-
-// ===============================
-// EVENTOS
-// ===============================
-input.addEventListener("keydown", function(event) {
-  if (event.key === "Enter") {
-    responder();
-  }
-});
