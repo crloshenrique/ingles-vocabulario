@@ -33,10 +33,17 @@
       margin-bottom: 20px;
     }
 
+    #opcoes-container {
+      display: flex;
+      flex-wrap: wrap; /* Permite quebrar linha quando necessário */
+      gap: 10px; /* Espaço entre os botões */
+      justify-content: space-between; /* Distribui espaço igual entre os botões */
+      margin-bottom: 20px; /* Espaço entre alternativas e o contador */
+    }
+
     .opcao-btn {
-      width: 100%;
+      width: calc(50% - 5px); /* Cada botão ocupa metade da linha menos o gap */
       padding: 14px;
-      margin-bottom: 10px;
       font-size: 18px;
       border-radius: 10px;
       border: none;
@@ -63,7 +70,7 @@
     #contador-container {
       display: flex;
       justify-content: space-between;
-      margin-top: 7px;
+      margin-top: 20px; /* Mais espaço acima do contador */
     }
 
     #acertos-box, #erros-box {
