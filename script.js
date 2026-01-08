@@ -2,26 +2,24 @@ const palavraBox = document.getElementById("palavra-box");
 const opcoesContainer = document.getElementById("opcoes-container");
 const acertosBox = document.getElementById("acertos-box");
 const errosBox = document.getElementById("erros-box");
-const contadorContainer = document.getElementById("contador-container");
-
-const menuPrincipal = document.getElementById("menu-principal");
-const menuNiveis = document.getElementById("menu-niveis");
-const menuIntervalos = document.getElementById("menu-intervalos");
+const contador = document.getElementById("contador-container");
+const menu = document.getElementById("menu");
+const container = document.getElementById("container");
 
 let vocabulario = {};
-let ordemArquivo = [];
 let palavras = [];
+let limiteInicio = 0;
+let limiteFim = 100;
 
 let i = 0;
 let acertos = 0;
 let erros = 0;
-
 let palavrasAcertadas = [];
 let palavrasErradas = [];
 
-/* ===============================
-   CARREGAR VOCABULÁRIO
-================================ */
+// ===============================
+// CARREGAR VOCABULÁRIO
+// ===============================
 fetch("vocabulario.txt")
   .then(res => res.text())
   .then(texto => {
@@ -30,103 +28,90 @@ fetch("vocabulario.txt")
       if (!linha || !linha.includes("=")) return;
 
       const [esq, dir] = linha.split("=");
-      const palavra = esq.replace(/\(.*?\)/, "").trim().toLowerCase();
-      const traducoes = dir.split("/").map(t => t.trim());
+      const match = esq.match(/^(.+?)(?:\s*\((.+?)\))?$/);
+      if (!match) return;
 
-      vocabulario[palavra] = traducoes;
-      ordemArquivo.push(palavra);
+      const palavra = match[1].trim().toLowerCase();
+      const significados = dir.split("/").map(s => s.trim());
+
+      vocabulario[palavra] = significados;
     });
+
+    mostrarMenuInicial();
   });
 
-/* ===============================
-   MENUS
-================================ */
-function abrirMenuNiveis() {
-  menuPrincipal.style.display = "none";
-  menuNiveis.style.display = "flex";
+// ===============================
+// MENUS
+// ===============================
+function mostrarMenuInicial() {
+  menu.innerHTML = `
+    <button class="opcao-btn" onclick="menuEscolherPalavras()">Escolher palavras</button>
+    <button class="opcao-btn" onclick="menuNiveis()">Jogar por níveis</button>
+  `;
 }
 
-function abrirMenuIntervalos() {
-  menuPrincipal.style.display = "none";
-  menuIntervalos.style.display = "flex";
+function menuNiveis() {
+  menu.innerHTML = `
+    <button class="opcao-btn" onclick="iniciarTeste(0,25)">Iniciante (25%)</button>
+    <button class="opcao-btn" onclick="iniciarTeste(0,50)">Intermediário (50%)</button>
+    <button class="opcao-btn" onclick="iniciarTeste(0,75)">Avançado (75%)</button>
+    <button class="opcao-btn" onclick="iniciarTeste(0,100)">Pro (100%)</button>
+  `;
 }
 
-/* ===============================
-   INICIAR MODOS
-================================ */
-function iniciarNivel(qtd) {
-  palavras = ordemArquivo.slice(0, qtd);
-  iniciarJogo();
+function menuEscolherPalavras() {
+  menu.innerHTML = `
+    <button class="opcao-btn" onclick="iniciarTeste(0,25)">0 à 25</button>
+    <button class="opcao-btn" onclick="iniciarTeste(25,50)">25 à 50</button>
+    <button class="opcao-btn" onclick="iniciarTeste(50,75)">50 à 75</button>
+    <button class="opcao-btn" onclick="iniciarTeste(75,100)">75 à 100</button>
+  `;
 }
 
-function iniciarIntervalo(inicio, fim) {
-  palavras = ordemArquivo.slice(inicio, fim);
-  iniciarJogo();
-}
+// ===============================
+// JOGO
+// ===============================
+function iniciarTeste(inicio, fim) {
+  limiteInicio = inicio;
+  limiteFim = fim;
 
-/* ===============================
-   JOGO
-================================ */
-function iniciarJogo() {
-  menuNiveis.style.display = "none";
-  menuIntervalos.style.display = "none";
+  palavras = Object.keys(vocabulario)
+    .slice(limiteInicio, limiteFim)
+    .sort(() => Math.random() - 0.5);
 
+  menu.style.display = "none";
   palavraBox.style.display = "flex";
-  opcoesContainer.style.display = "flex";
-  contadorContainer.style.display = "flex";
+  contador.style.display = "flex";
 
-  palavras = palavras.sort(() => Math.random() - 0.5);
-
-  i = 0;
-  acertos = 0;
-  erros = 0;
+  i = acertos = erros = 0;
   palavrasAcertadas = [];
   palavrasErradas = [];
 
   mostrarPalavra();
 }
 
-function atualizarContadores() {
-  acertosBox.textContent = acertos;
-  errosBox.textContent = erros;
-}
-
 function mostrarPalavra() {
   if (i >= palavras.length) {
     palavraBox.textContent = "Teste finalizado!";
     opcoesContainer.innerHTML = "";
-    atualizarContadores();
     mostrarResultados();
     return;
   }
 
   const palavra = palavras[i];
-  palavraBox.textContent =
-    palavra.charAt(0).toUpperCase() + palavra.slice(1);
+  palavraBox.textContent = palavra.charAt(0).toUpperCase() + palavra.slice(1);
 
-  opcoesContainer.innerHTML = "";
-  criarOpcoes(palavra);
-  atualizarContadores();
-}
-
-function criarOpcoes(palavraAtual) {
-  const traducoes = vocabulario[palavraAtual];
-  const correta =
-    traducoes[Math.floor(Math.random() * traducoes.length)];
+  const correta = vocabulario[palavra][Math.floor(Math.random() * vocabulario[palavra].length)];
 
   let opcoes = [correta];
-
   while (opcoes.length < 4) {
     const p = palavras[Math.floor(Math.random() * palavras.length)];
-    if (p === palavraAtual) continue;
-
-    const errada =
-      vocabulario[p][Math.floor(Math.random() * vocabulario[p].length)];
-
-    if (!opcoes.includes(errada)) opcoes.push(errada);
+    const s = vocabulario[p][Math.floor(Math.random() * vocabulario[p].length)];
+    if (!opcoes.includes(s)) opcoes.push(s);
   }
 
   opcoes.sort(() => Math.random() - 0.5);
+  opcoesContainer.innerHTML = "";
 
   opcoes.forEach(opcao => {
     const btn = document.createElement("button");
@@ -134,24 +119,23 @@ function criarOpcoes(palavraAtual) {
     btn.textContent = opcao;
 
     btn.onclick = () => {
-      document
-        .querySelectorAll(".opcao-btn")
-        .forEach(b => b.disabled = true);
+      document.querySelectorAll(".opcao-btn").forEach(b => b.disabled = true);
 
-      const palavraFormatada =
-        palavraAtual.charAt(0).toUpperCase() + palavraAtual.slice(1);
+      const textoFinal = `${palavra.charAt(0).toUpperCase() + palavra.slice(1)} = ${correta}`;
 
       if (opcao === correta) {
         btn.classList.add("correta");
         acertos++;
-        palavrasAcertadas.push(`${palavraFormatada} = ${correta}`);
+        palavrasAcertadas.push(textoFinal);
       } else {
         btn.classList.add("errada");
         erros++;
-        palavrasErradas.push(`${palavraFormatada} = ${correta}`);
+        palavrasErradas.push(textoFinal);
       }
 
-      atualizarContadores();
+      acertosBox.textContent = acertos;
+      errosBox.textContent = erros;
+
       i++;
       setTimeout(mostrarPalavra, 1200);
     };
@@ -160,9 +144,9 @@ function criarOpcoes(palavraAtual) {
   });
 }
 
-/* ===============================
-   RESULTADOS
-================================ */
+// ===============================
+// RESULTADOS
+// ===============================
 function mostrarResultados() {
   const lista = document.createElement("div");
   lista.style.display = "flex";
@@ -178,7 +162,6 @@ function mostrarResultados() {
     box.textContent = texto;
     box.style.flex = "1 1 45%";
     box.style.padding = "12px";
-    box.style.fontSize = "18px";
     box.style.fontWeight = "bold";
     box.style.color = "white";
     box.style.borderRadius = "12px";
@@ -187,5 +170,5 @@ function mostrarResultados() {
     lista.appendChild(box);
   }
 
-  document.getElementById("container").appendChild(lista);
+  container.appendChild(lista);
 }
