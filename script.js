@@ -1,12 +1,11 @@
-
 const palavraBox = document.getElementById("palavra-box");
 const opcoesContainer = document.getElementById("opcoes-container");
 const acertosBox = document.getElementById("acertos-box");
 const errosBox = document.getElementById("erros-box");
 const contadorContainer = document.getElementById("contador-container");
 
-//Para testar o código:
-document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 005</p>');
+// Para testar se o JS atualizou
+document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 007</p>');
 
 const menuPrincipal = document.getElementById("menu-principal");
 const menuNiveis = document.getElementById("menu-niveis");
