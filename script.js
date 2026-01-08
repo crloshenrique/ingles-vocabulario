@@ -6,7 +6,8 @@ const contadorContainer = document.getElementById("contador-container");
 const resultadosLista = document.getElementById("resultados-lista");
 const btnReiniciar = document.getElementById("btn-reiniciar");
 
-document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 013</p>');
+//Apenas para testar se o Github atualizou:
+document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 015</p>');
 
 const menuPrincipal = document.getElementById("menu-principal");
 const menuNiveis = document.getElementById("menu-niveis");
@@ -19,8 +20,9 @@ let palavrasParaOJogo = [];
 let i = 0;
 let acertos = 0;
 let erros = 0;
-let palavrasAcertadas = [];
-let palavrasErradas = [];
+
+// Agora usamos apenas UMA lista para salvar na ordem em que acontecem
+let historicoResultados = []; 
 
 // CARREGAR DADOS
 fetch("vocabulario.txt")
@@ -38,7 +40,6 @@ fetch("vocabulario.txt")
       ordemArquivo.push(chave);
     });
 
-    // Libera o menu após carregar
     document.getElementById("status-load").style.display = "none";
     document.getElementById("btn-niveis").style.display = "block";
     document.getElementById("btn-intervalos").style.display = "block";
@@ -77,7 +78,7 @@ function iniciarJogo() {
 
   palavrasParaOJogo.sort(() => Math.random() - 0.5);
   i = 0; acertos = 0; erros = 0;
-  palavrasAcertadas = []; palavrasErradas = [];
+  historicoResultados = []; // Limpa o histórico ao começar
   
   mostrarPalavra();
 }
@@ -118,16 +119,25 @@ function criarOpcoes(palavraAtual) {
       const todos = document.querySelectorAll(".opcao-btn");
       todos.forEach(b => b.disabled = true);
 
+      // Criamos um objeto com a resposta e a cor para salvar no histórico
+      let resultadoDaVez = {
+        texto: `${vocabulario[palavraAtual].exibir} = ${correta}`,
+        cor: ""
+      };
+
       if (opcao === correta) {
         btn.classList.add("correta");
         acertos++;
-        palavrasAcertadas.push(`${vocabulario[palavraAtual].exibir} = ${correta}`);
+        resultadoDaVez.cor = "#4CAF50"; // Verde
       } else {
         btn.classList.add("errada");
         erros++;
-        palavrasErradas.push(`${vocabulario[palavraAtual].exibir} = ${correta}`);
+        resultadoDaVez.cor = "#f44336"; // Vermelho
         todos.forEach(b => { if (b.textContent === correta) b.classList.add("correta"); });
       }
+
+      // Adiciona ao histórico na ordem exata em que foi respondida
+      historicoResultados.push(resultadoDaVez);
 
       i++;
       setTimeout(mostrarPalavra, 1000);
@@ -140,14 +150,17 @@ function finalizarTeste() {
   palavraBox.textContent = "Teste finalizado!";
   opcoesContainer.style.display = "none";
   
-  palavrasAcertadas.forEach(p => criarCard(p, "#4CAF50"));
-  palavrasErradas.forEach(p => criarCard(p, "#f44336"));
+  // Agora percorremos o histórico único, mantendo a ordem
+  historicoResultados.forEach(item => {
+    criarCard(item.texto, item.cor);
+  });
+
   btnReiniciar.style.display = "block";
 }
 
 function criarCard(texto, cor) {
   const box = document.createElement("div");
   box.textContent = texto;
-  box.style.cssText = `background:${cor}; color:white; padding:12px; border-radius:10px; font-weight:bold;`;
+  box.style.cssText = `background:${cor}; color:white; padding:12px; border-radius:10px; font-weight:bold; margin-bottom: 8px;`;
   resultadosLista.appendChild(box);
 }
