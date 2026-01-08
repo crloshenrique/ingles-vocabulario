@@ -5,7 +5,7 @@ const errosBox = document.getElementById("erros-box");
 const container = document.getElementById("container");
 const menu = document.getElementById("menu");
 const contadorContainer = document.getElementById("contador-container");
-
+//.
 let vocabulario = {};
 let palavras = [];
 let limitePalavras = 100;
