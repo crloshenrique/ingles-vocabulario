@@ -39,11 +39,11 @@
       cursor: pointer;
       background: #666;
       color: white;
-      transition: background 0.2s;
+      transition: opacity 0.2s;
       -webkit-tap-highlight-color: transparent;
     }
 
-    button:active { background: #444; }
+    button:active { opacity: 0.8; }
 
     #palavra-box {
       background: #666;
@@ -119,18 +119,18 @@
     </div>
 
     <div id="menu-niveis" class="menu" style="display:none">
-      <button onclick="iniciarNivel(25)">Iniciante</button>
-      <button onclick="iniciarNivel(50)">Intermediário</button>
-      <button onclick="iniciarNivel(100)">Avançado</button>
-      <button onclick="iniciarNivel(vocabulario.length)">Pro</button>
+      <button onclick="iniciarNivel(25)" style="background: #27db42;">Iniciante</button>
+      <button onclick="iniciarNivel(50)" style="background: #ff9d00;">Intermediário</button>
+      <button onclick="iniciarNivel(100)" style="background: #f5ed11; color: #000;">Avançado</button>
+      <button onclick="iniciarNivel(vocabulario.length)" style="background: #ff1303;">Pro</button>
       <button onclick="window.location.reload()" style="background:#333;">Voltar</button>
     </div>
 
     <div id="menu-intervalos" class="menu" style="display:none">
-      <button onclick="iniciarIntervalo(0,25)">1 ⮕ 25 palavras</button>
-      <button onclick="iniciarIntervalo(25,50)">26 ⮕ 50 palavras</button>
-      <button onclick="iniciarIntervalo(50,75)">51 ⮕ 75 palavras</button>
-      <button onclick="iniciarIntervalo(75,100)">76 ⮕ 100 palavras</button>
+      <button onclick="iniciarIntervalo(0,25)" style="background: #27db42;">1 ⮕ 25 palavras</button>
+      <button onclick="iniciarIntervalo(25,50)" style="background: #ff9d00;">26 ⮕ 50 palavras</button>
+      <button onclick="iniciarIntervalo(50,75)" style="background: #f5ed11; color: #000;">51 ⮕ 75 palavras</button>
+      <button onclick="iniciarIntervalo(75,100)" style="background: #ff1303;">76 ⮕ 100 palavras</button>
       <button onclick="window.location.reload()" style="background:#333;">Voltar</button>
     </div>
 
