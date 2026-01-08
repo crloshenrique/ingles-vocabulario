@@ -25,6 +25,26 @@
       box-sizing: border-box;
     }
 
+    #menu {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    #menu h2 {
+      margin-bottom: 10px;
+    }
+
+    .menu-btn {
+      padding: 14px;
+      font-size: 18px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      background-color: #666;
+      color: white;
+    }
+
     #palavra-box {
       background-color: #666666;
       color: white;
@@ -35,18 +55,14 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
       margin-bottom: 20px;
       height: 125px;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       text-align: center;
-      line-height: 1.2;
-      overflow-wrap: break-word;
-      word-break: break-word;
-      overflow-y: hidden;
     }
 
     #opcoes-container {
-      display: flex;
+      display: none;
       flex-wrap: wrap;
       gap: 10px;
       justify-content: space-between;
@@ -62,11 +78,6 @@
       cursor: pointer;
       background-color: #d9d9d9;
       color: #333;
-      transition: background-color 0.3s;
-    }
-
-    .opcao-btn:disabled {
-      cursor: default;
     }
 
     .opcao-btn.correta {
@@ -80,7 +91,7 @@
     }
 
     #contador-container {
-      display: flex;
+      display: none;
       justify-content: space-between;
       gap: 10px;
       margin-top: 20px;
@@ -93,8 +104,6 @@
       font-weight: bold;
       color: white;
       border-radius: 12px;
-      margin: 0;
-      box-sizing: border-box;
     }
 
     #acertos-box { background-color: #4CAF50; }
@@ -104,6 +113,15 @@
 
 <body>
   <div id="container">
+
+    <div id="menu">
+      <h2>Escolha o nível do teste</h2>
+      <button class="menu-btn" onclick="iniciarComLimite(25)">Iniciante (25%)</button>
+      <button class="menu-btn" onclick="iniciarComLimite(50)">Intermediário (50%)</button>
+      <button class="menu-btn" onclick="iniciarComLimite(75)">Avançado (75%)</button>
+      <button class="menu-btn" onclick="iniciarComLimite(100)">Pro (100%)</button>
+    </div>
+
     <div id="palavra-box">Carregando...</div>
     <div id="opcoes-container"></div>
 
@@ -111,6 +129,7 @@
       <div id="acertos-box">0</div>
       <div id="erros-box">0</div>
     </div>
+
   </div>
 
   <script src="script.js"></script>
