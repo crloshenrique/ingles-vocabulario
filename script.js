@@ -7,17 +7,20 @@ const menu = document.getElementById("menu");
 const contadorContainer = document.getElementById("contador-container");
 
 let vocabulario = {};
-let todasPalavras = [];
+let ordemArquivo = []; // 👈 ORDEM REAL DO ARQUIVO
 let palavras = [];
-let limitePalavras = 100;
 
+let limitePalavras = 100;
 let i = 0;
 let acertos = 0;
 let erros = 0;
 
 let palavrasAcertadas = [];
-let palavrasErradas = [];
+let palavrasErradas =;
 
+/* ===============================
+   CARREGAR VOCABULÁRIO
+================================ */
 fetch("vocabulario.txt")
   .then(res => res.text())
   .then(texto => {
@@ -30,10 +33,13 @@ fetch("vocabulario.txt")
       const traducoes = dir.split("/").map(t => t.trim());
 
       vocabulario[palavra] = traducoes;
-      todasPalavras.push(palavra);
+      ordemArquivo.push(palavra); // 👈 GUARDA NA ORDEM
     });
   });
 
+/* ===============================
+   INICIAR TESTE
+================================ */
 function iniciarComLimite(limite) {
   limitePalavras = limite;
 
@@ -46,14 +52,24 @@ function iniciarComLimite(limite) {
 }
 
 function iniciarJogo() {
-  // 👇 CORREÇÃO REAL
-  palavras = todasPalavras
-    .slice(0, limitePalavras)   // pega as PRIMEIRAS
-    .sort(() => Math.random() - 0.5); // depois embaralha
+  // ✅ PRIMEIRO corta
+  palavras = ordemArquivo.slice(0, limitePalavras);
+
+  // ✅ DEPOIS embaralha SOMENTE essas
+  palavras = palavras.sort(() => Math.random() - 0.5);
+
+  i = 0;
+  acertos = 0;
+  erros = 0;
+  palavrasAcertadas = [];
+  palavrasErradas = [];
 
   mostrarPalavra();
 }
 
+/* ===============================
+   JOGO
+================================ */
 function atualizarContadores() {
   acertosBox.textContent = acertos;
   errosBox.textContent = erros;
@@ -85,7 +101,8 @@ function criarOpcoes(palavraAtual) {
   let opcoes = [correta];
 
   while (opcoes.length < 4) {
-    const p = palavras[Math.floor(Math.random() * palavras.length)];
+    const p =
+      palavras[Math.floor(Math.random() * palavras.length)];
     if (p === palavraAtual) continue;
 
     const errada =
@@ -102,7 +119,8 @@ function criarOpcoes(palavraAtual) {
     btn.textContent = opcao;
 
     btn.onclick = () => {
-      document.querySelectorAll(".opcao-btn")
+      document
+        .querySelectorAll(".opcao-btn")
         .forEach(b => b.disabled = true);
 
       const palavraFormatada =
@@ -127,6 +145,9 @@ function criarOpcoes(palavraAtual) {
   });
 }
 
+/* ===============================
+   RESULTADOS
+================================ */
 function mostrarResultados() {
   const lista = document.createElement("div");
   lista.style.display = "flex";
