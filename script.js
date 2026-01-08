@@ -7,6 +7,7 @@ const menu = document.getElementById("menu");
 const contadorContainer = document.getElementById("contador-container");
 
 let vocabulario = {};
+let todasPalavras = [];
 let palavras = [];
 let limitePalavras = 100;
 
@@ -25,12 +26,11 @@ fetch("vocabulario.txt")
       if (!linha || !linha.includes("=")) return;
 
       const [esq, dir] = linha.split("=");
-      const match = esq.match(/^(.+?)(?:\s*\((.+?)\))?$/);
+      const palavra = esq.replace(/\(.*?\)/, "").trim().toLowerCase();
+      const traducoes = dir.split("/").map(t => t.trim());
 
-      const palavra = match[1].trim().toLowerCase();
-      const significados = dir.split("/").map(s => s.trim());
-
-      vocabulario[palavra] = significados;
+      vocabulario[palavra] = traducoes;
+      todasPalavras.push(palavra);
     });
   });
 
@@ -46,9 +46,10 @@ function iniciarComLimite(limite) {
 }
 
 function iniciarJogo() {
-  palavras = Object.keys(vocabulario)
-    .sort(() => Math.random() - 0.5)
-    .slice(0, limitePalavras);
+  // 👇 CORREÇÃO REAL
+  palavras = todasPalavras
+    .slice(0, limitePalavras)   // pega as PRIMEIRAS
+    .sort(() => Math.random() - 0.5); // depois embaralha
 
   mostrarPalavra();
 }
@@ -62,6 +63,7 @@ function mostrarPalavra() {
   if (i >= palavras.length) {
     palavraBox.textContent = "Teste finalizado!";
     opcoesContainer.innerHTML = "";
+    atualizarContadores();
     mostrarResultados();
     return;
   }
@@ -103,17 +105,17 @@ function criarOpcoes(palavraAtual) {
       document.querySelectorAll(".opcao-btn")
         .forEach(b => b.disabled = true);
 
-      const palavraLimpa =
+      const palavraFormatada =
         palavraAtual.charAt(0).toUpperCase() + palavraAtual.slice(1);
 
       if (opcao === correta) {
         btn.classList.add("correta");
         acertos++;
-        palavrasAcertadas.push(`${palavraLimpa} = ${correta}`);
+        palavrasAcertadas.push(`${palavraFormatada} = ${correta}`);
       } else {
         btn.classList.add("errada");
         erros++;
-        palavrasErradas.push(`${palavraLimpa} = ${correta}`);
+        palavrasErradas.push(`${palavraFormatada} = ${correta}`);
       }
 
       atualizarContadores();
