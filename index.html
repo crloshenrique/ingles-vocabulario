@@ -1,63 +1,62 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <link rel="icon" type="image/png" href="icone.png">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Treino de Inglês</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
       margin: 0;
-      padding: 20px 0;
     }
 
     #container {
       width: 100%;
       max-width: 400px;
-      margin: 0 auto;
       text-align: center;
-      padding: 0 15px 30px;
+      padding: 15px;
       box-sizing: border-box;
     }
 
-    #menu {
+    .menu {
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
 
-    .menu-btn {
+    .menu button {
       padding: 14px;
       font-size: 18px;
-      border-radius: 12px;
+      border-radius: 10px;
       border: none;
       cursor: pointer;
-      background-color: #666;
+      background: #666;
       color: white;
     }
 
     #palavra-box {
-      background-color: #666;
+      background: #666;
       color: white;
       font-size: 2rem;
       font-weight: bold;
-      padding: 0 20px;
-      border-radius: 15px;
-      margin-bottom: 20px;
       height: 125px;
+      border-radius: 15px;
       display: none;
       align-items: center;
       justify-content: center;
+      margin-bottom: 20px;
     }
 
     #opcoes-container {
       display: none;
       flex-wrap: wrap;
       gap: 10px;
-      justify-content: space-between;
       margin-bottom: 20px;
     }
 
@@ -68,23 +67,15 @@
       border-radius: 10px;
       border: none;
       cursor: pointer;
-      background-color: #d9d9d9;
+      background: #d9d9d9;
     }
 
-    .opcao-btn.correta {
-      background-color: #4CAF50;
-      color: white;
-    }
-
-    .opcao-btn.errada {
-      background-color: #f44336;
-      color: white;
-    }
+    .correta { background: #4CAF50; color: white; }
+    .errada { background: #f44336; color: white; }
 
     #contador-container {
       display: none;
       gap: 10px;
-      margin-top: 15px;
     }
 
     #acertos-box, #erros-box {
@@ -96,23 +87,38 @@
       border-radius: 12px;
     }
 
-    #acertos-box { background-color: #4CAF50; }
-    #erros-box { background-color: #f44336; }
+    #acertos-box { background: #4CAF50; }
+    #erros-box { background: #f44336; }
   </style>
 </head>
 
 <body>
   <div id="container">
 
-    <div id="menu">
-      <h2>Escolha o nível</h2>
-      <button class="menu-btn" onclick="iniciarComLimite(25)">Iniciante (25%)</button>
-      <button class="menu-btn" onclick="iniciarComLimite(50)">Intermediário (50%)</button>
-      <button class="menu-btn" onclick="iniciarComLimite(75)">Avançado (75%)</button>
-      <button class="menu-btn" onclick="iniciarComLimite(100)">Pro (100%)</button>
+    <!-- MENU PRINCIPAL -->
+    <div id="menu-principal" class="menu">
+      <h2>Escolha a opção desejada</h2>
+      <button onclick="abrirMenuNiveis()">Jogar por níveis</button>
+      <button onclick="abrirMenuIntervalos()">Escolher palavras</button>
     </div>
 
-    <div id="palavra-box">Carregando...</div>
+    <!-- MENU NÍVEIS -->
+    <div id="menu-niveis" class="menu" style="display:none">
+      <button onclick="iniciarNivel(25)">Iniciante (25%)</button>
+      <button onclick="iniciarNivel(50)">Intermediário (50%)</button>
+      <button onclick="iniciarNivel(75)">Avançado (75%)</button>
+      <button onclick="iniciarNivel(100)">Pro (100%)</button>
+    </div>
+
+    <!-- MENU INTERVALOS -->
+    <div id="menu-intervalos" class="menu" style="display:none">
+      <button onclick="iniciarIntervalo(0,25)">0 à 25</button>
+      <button onclick="iniciarIntervalo(25,50)">25 à 50</button>
+      <button onclick="iniciarIntervalo(50,75)">50 à 75</button>
+      <button onclick="iniciarIntervalo(75,100)">75 à 100</button>
+    </div>
+
+    <div id="palavra-box"></div>
     <div id="opcoes-container"></div>
 
     <div id="contador-container">
