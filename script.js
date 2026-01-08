@@ -5,8 +5,8 @@ const errosBox = document.getElementById("erros-box");
 const contador = document.getElementById("contador-container");
 const container = document.getElementById("container");
 
-document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git atualizado!</p>');
-
+// Linha para indicar atualização
+document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git2</p>');
 
 let vocabulario = {};
 let palavras = [];
@@ -114,11 +114,17 @@ function iniciarTeste(inicio, fim) {
 // ===============================
 function mostrarPalavra() {
   if (i >= palavras.length) {
+    // Finalizar teste
     palavraBox.textContent = "Teste finalizado!";
     palavraBox.style.display = "flex";
     opcoesContainer.innerHTML = "";
     opcoesContainer.style.display = "none";
+
+    // Mostrar resultados finais
+    acertosBox.textContent = acertos;
+    errosBox.textContent = erros;
     contador.style.display = "flex";
+
     mostrarResultados();
     return;
   }
