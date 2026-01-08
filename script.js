@@ -18,6 +18,14 @@ let palavrasAcertadas = [];
 let palavrasErradas = [];
 
 // ===============================
+// ESTADO INICIAL (CRÍTICO)
+// ===============================
+menu.style.display = "flex";
+palavraBox.style.display = "none";
+contador.style.display = "none";
+opcoesContainer.innerHTML = "";
+
+// ===============================
 // CARREGAR VOCABULÁRIO
 // ===============================
 fetch("vocabulario.txt")
@@ -44,6 +52,7 @@ fetch("vocabulario.txt")
 // MENUS
 // ===============================
 function mostrarMenuInicial() {
+  menu.style.display = "flex";
   menu.innerHTML = `
     <button class="opcao-btn" onclick="menuEscolherPalavras()">Escolher palavras</button>
     <button class="opcao-btn" onclick="menuNiveis()">Jogar por níveis</button>
@@ -79,13 +88,24 @@ function iniciarTeste(inicio, fim) {
     .slice(limiteInicio, limiteFim)
     .sort(() => Math.random() - 0.5);
 
+  // RESET VISUAL
   menu.style.display = "none";
   palavraBox.style.display = "flex";
   contador.style.display = "flex";
+  opcoesContainer.innerHTML = "";
 
-  i = acertos = erros = 0;
+  // RESET DADOS
+  i = 0;
+  acertos = 0;
+  erros = 0;
   palavrasAcertadas = [];
   palavrasErradas = [];
+
+  acertosBox.textContent = "0";
+  errosBox.textContent = "0";
+
+  // LIMPAR RESULTADOS ANTIGOS
+  document.querySelectorAll(".resultado-final").forEach(e => e.remove());
 
   mostrarPalavra();
 }
@@ -149,6 +169,7 @@ function mostrarPalavra() {
 // ===============================
 function mostrarResultados() {
   const lista = document.createElement("div");
+  lista.className = "resultado-final";
   lista.style.display = "flex";
   lista.style.flexWrap = "wrap";
   lista.style.gap = "10px";
