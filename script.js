@@ -5,7 +5,7 @@ const errosBox = document.getElementById("erros-box");
 const contadorContainer = document.getElementById("contador-container");
 
 // Para testar se o JS atualizou
-document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 008</p>');
+document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 009</p>');
 
 const menuPrincipal = document.getElementById("menu-principal");
 const menuNiveis = document.getElementById("menu-niveis");
