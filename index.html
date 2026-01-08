@@ -47,7 +47,7 @@
       font-weight: bold;
       height: 125px;
       border-radius: 15px;
-      display: none;
+      display: flex;
       align-items: center;
       justify-content: center;
       margin-bottom: 20px;
@@ -74,8 +74,9 @@
     .errada { background: #f44336; color: white; }
 
     #contador-container {
-      display: none;
+      display: flex;
       gap: 10px;
+      margin-bottom: 20px;
     }
 
     #acertos-box, #erros-box {
@@ -118,9 +119,11 @@
       <button onclick="iniciarIntervalo(75,100)">75 à 100</button>
     </div>
 
-    <div id="palavra-box"></div>
+    <!-- CAIXA DE PALAVRA E OPÇÕES -->
+    <div id="palavra-box">Carregando...</div>
     <div id="opcoes-container"></div>
 
+    <!-- CONTADORES DE ACERTOS E ERROS -->
     <div id="contador-container">
       <div id="acertos-box">0</div>
       <div id="erros-box">0</div>
