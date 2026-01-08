@@ -2,6 +2,7 @@ const palavraBox = document.getElementById("palavra-box");
 const opcoesContainer = document.getElementById("opcoes-container");
 const acertosBox = document.getElementById("acertos-box");
 const errosBox = document.getElementById("erros-box");
+const resultadoContainer = document.getElementById("resultado-palavras");
 
 // ===============================
 // VOCABULÁRIO
@@ -46,6 +47,9 @@ let i = 0;
 let acertos = 0;
 let erros = 0;
 
+let palavrasAcertadas = [];
+let palavrasErradas = [];
+
 // ===============================
 // FUNÇÕES
 // ===============================
@@ -63,6 +67,7 @@ function mostrarPalavra() {
   if (i >= palavras.length) {
     palavraBox.textContent = "Teste finalizado!";
     opcoesContainer.innerHTML = "";
+    mostrarResultados();
     return;
   }
 
@@ -85,14 +90,12 @@ function mostrarPalavra() {
 function criarOpcoes(palavraAtual) {
   const dados = vocabulario[palavraAtual];
 
-  // escolhe UMA tradução correta aleatória
   const corretaObj = dados[Math.floor(Math.random() * dados.length)];
   const correta = corretaObj.significado;
 
   let opcoes = [correta];
-
-  // 4 opções no total, com limite de tentativas para evitar loop infinito
   let tentativas = 0;
+
   while (opcoes.length < 4 && tentativas < 20) {
     tentativas++;
     const palavraAleatoria =
@@ -108,7 +111,6 @@ function criarOpcoes(palavraAtual) {
     }
   }
 
-  // se ainda faltar opções, repetir algumas para completar
   while (opcoes.length < 4) {
     opcoes.push(opcoes[0]);
   }
@@ -124,12 +126,17 @@ function criarOpcoes(palavraAtual) {
       const botoes = document.querySelectorAll(".opcao-btn");
       botoes.forEach(b => b.disabled = true);
 
+      const palavraLimpa =
+        palavraAtual.charAt(0).toUpperCase() + palavraAtual.slice(1);
+
       if (opcao === correta) {
         btn.classList.add("correta");
         acertos++;
+        palavrasAcertadas.push(palavraLimpa);
       } else {
         btn.classList.add("errada");
         erros++;
+        palavrasErradas.push(palavraLimpa);
 
         botoes.forEach(b => {
           if (b.textContent === correta) {
@@ -140,10 +147,32 @@ function criarOpcoes(palavraAtual) {
 
       atualizarContadores();
       i++;
-
       setTimeout(mostrarPalavra, 1400);
     };
 
     opcoesContainer.appendChild(btn);
+  });
+}
+
+// ===============================
+// RESULTADO FINAL
+// ===============================
+function mostrarResultados() {
+  resultadoContainer.innerHTML = "";
+
+  palavrasAcertadas.forEach(palavra => {
+    const box = document.createElement("div");
+    box.textContent = palavra;
+    box.className = "resultado-box";
+    box.style.backgroundColor = "#4CAF50";
+    resultadoContainer.appendChild(box);
+  });
+
+  palavrasErradas.forEach(palavra => {
+    const box = document.createElement("div");
+    box.textContent = palavra;
+    box.className = "resultado-box";
+    box.style.backgroundColor = "#f44336";
+    resultadoContainer.appendChild(box);
   });
 }
