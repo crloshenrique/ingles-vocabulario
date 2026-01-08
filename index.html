@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Treino de Inglês</title>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -20,7 +21,7 @@
       width: 100%;
       max-width: 400px;
       text-align: center;
-      padding: 0 15px; /* espaço lateral para celular */
+      padding: 0 15px;
       box-sizing: border-box;
     }
 
@@ -33,10 +34,10 @@
       border-radius: 15px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
       margin-bottom: 20px;
-      height: 125px;       
+      height: 125px;
       display: flex;
-      align-items: center;      
-      justify-content: center; 
+      align-items: center;
+      justify-content: center;
       text-align: center;
       line-height: 1.2;
       overflow-wrap: break-word;
@@ -44,18 +45,16 @@
       overflow-y: hidden;
     }
 
-
-
     #opcoes-container {
       display: flex;
-      flex-wrap: wrap; /* permite quebrar linha */
-      gap: 10px; /* espaço entre os botões */
-      justify-content: space-between; /* distribui os botões igualmente */
-      margin-bottom: 20px; /* espaço entre botões e contador */
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      margin-bottom: 20px;
     }
 
     .opcao-btn {
-      width: calc(50% - 5px); /* metade da linha menos o gap */
+      width: calc(50% - 5px);
       padding: 14px;
       font-size: 18px;
       border-radius: 10px;
@@ -83,12 +82,10 @@
     #contador-container {
       display: flex;
       justify-content: space-between;
-      gap: 10px; /* espaço entre acertos e erros */
-      margin-top: 20px; /* mais espaço acima do contador */
+      gap: 10px;
+      margin-top: 20px;
     }
 
-    <div id="resultado-palavras"></div>
-    
     #acertos-box, #erros-box {
       flex: 1;
       padding: 12px;
@@ -96,7 +93,7 @@
       font-weight: bold;
       color: white;
       border-radius: 12px;
-      margin: 0; /* remove margem lateral para alinhamento com botões */
+      margin: 0;
       box-sizing: border-box;
     }
 
@@ -104,15 +101,18 @@
     #erros-box { background-color: #f44336; }
   </style>
 </head>
+
 <body>
   <div id="container">
     <div id="palavra-box">Carregando...</div>
     <div id="opcoes-container"></div>
+
     <div id="contador-container">
       <div id="acertos-box">0</div>
       <div id="erros-box">0</div>
     </div>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
