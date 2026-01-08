@@ -6,15 +6,14 @@ const contadorContainer = document.getElementById("contador-container");
 const resultadosLista = document.getElementById("resultados-lista");
 const btnReiniciar = document.getElementById("btn-reiniciar");
 
-// Teste de atualização:
-document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 041</p>');
+// Atualizado conforme solicitado: Git 25
+document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 43</p>');
 
 const menuPrincipal = document.getElementById("menu-principal");
 const menuNiveis = document.getElementById("menu-niveis");
 const menuIntervalos = document.getElementById("menu-intervalos");
 
-let vocabulario = {};
-let ordemArquivo = [];
+let vocabulario = []; // Mudamos para Array para evitar erro de chaves
 let palavrasParaOJogo = [];
 let palavraAtualObjeto = null;
 
@@ -28,18 +27,21 @@ let historicoResultados = [];
 fetch("vocabulario.txt")
   .then(res => res.text())
   .then(texto => {
-    // Carrega e limpa as palavras ignorando linhas vazias
     const linhas = texto.split("\n")
                         .map(l => l.trim())
                         .filter(l => l.includes("="));
     
     linhas.forEach(linha => {
       const [esquerda, direita] = linha.split("=");
-      const chave = esquerda.replace(/\(.*?\)/, "").trim().toLowerCase();
+      const exibir = esquerda.trim();
       const traducoes = direita.split("/").map(t => t.trim());
 
-      vocabulario[chave] = { exibir: esquerda.trim(), traducoes: traducoes };
-      ordemArquivo.push(chave);
+      // Guardamos tudo em um único array de objetos
+      vocabulario.push({
+        exibir: exibir,
+        correta: traducoes[0],
+        todas: traducoes
+      });
     });
 
     document.getElementById("status-load").style.display = "none";
@@ -61,27 +63,17 @@ function abrirMenuIntervalos() {
 }
 
 /* ===============================
-   LÓGICA DE SELEÇÃO (FIXO 25)
+   LÓGICA DE SELEÇÃO
 ================================ */
 
-// Função para Níveis (25, 50, 100)
 function iniciarNivel(quantidade) {
-    palavrasParaOJogo = ordemArquivo.slice(0, quantidade);
+    palavrasParaOJogo = vocabulario.slice(0, quantidade);
     iniciarJogo();
 }
 
-// Função para Intervalos (1-25, 26-50, etc)
-// Agora usamos o índice exato: 0 a 25 PEGA 25 ITENS.
 function iniciarIntervalo(inicio, fim) {
-    palavrasParaOJogo = ordemArquivo.slice(inicio, fim);
-    
-    // GARANTIA REAL: Se o seu arquivo tem 100 e o slice veio com 24, 
-    // ele força a entrada da última palavra do bloco.
-    if (palavrasParaOJogo.length < 25 && (fim - inicio) === 25) {
-        if (ordemArquivo[fim - 1]) {
-            palavrasParaOJogo = ordemArquivo.slice(inicio, fim);
-        }
-    }
+    // Aqui o slice(0, 25) pega exatamente do 0 ao 24.
+    palavrasParaOJogo = vocabulario.slice(inicio, fim);
     iniciarJogo();
 }
 
@@ -91,11 +83,11 @@ function iniciarIntervalo(inicio, fim) {
 function iniciarJogo() {
   menuNiveis.style.display = "none";
   menuIntervalos.style.display = "none";
-  
   palavraBox.style.display = "flex";
   opcoesContainer.style.display = "flex";
   contadorContainer.style.display = "flex";
 
+  // Embaralha o bloco selecionado
   palavrasParaOJogo.sort(() => Math.random() - 0.5);
   
   acertos = 0; 
@@ -108,32 +100,31 @@ function iniciarJogo() {
 }
 
 function proximaRodada() {
-  // O jogo só para quando a lista estiver ZERADA
   if (palavrasParaOJogo.length === 0) {
     finalizarTeste();
     return;
   }
 
-  const chaveDavez = palavrasParaOJogo.shift();
-  palavraAtualObjeto = { chave: chaveDavez, dados: vocabulario[chaveDavez] };
+  // Pega o objeto inteiro da lista
+  palavraAtualObjeto = palavrasParaOJogo.shift();
 
-  palavraBox.textContent = palavraAtualObjeto.dados.exibir;
+  palavraBox.textContent = palavraAtualObjeto.exibir;
   opcoesContainer.innerHTML = "";
   
-  criarOpcoes(chaveDavez);
+  criarOpcoes(palavraAtualObjeto);
   acertosBox.textContent = acertos;
   errosBox.textContent = erros;
 }
 
-function criarOpcoes(chaveAtual) {
-  const corretaLista = vocabulario[chaveAtual].traducoes;
-  const correta = corretaLista[Math.floor(Math.random() * corretaLista.length)];
+function criarOpcoes(objetoAtual) {
+  const correta = objetoAtual.correta;
   let opcoes = [correta];
 
+  // Pega distrações do vocabulário total
   while (opcoes.length < 4) {
-    const pAleatoria = ordemArquivo[Math.floor(Math.random() * ordemArquivo.length)];
-    const errada = vocabulario[pAleatoria].traducoes[0];
-    if (!opcoes.includes(errada)) opcoes.push(errada);
+    const sorteio = vocabulario[Math.floor(Math.random() * vocabulario.length)];
+    const distracao = sorteio.correta;
+    if (!opcoes.includes(distracao)) opcoes.push(distracao);
   }
 
   opcoes.sort(() => Math.random() - 0.5);
@@ -146,23 +137,23 @@ function criarOpcoes(chaveAtual) {
       const todos = document.querySelectorAll(".opcao-btn");
       todos.forEach(b => b.disabled = true);
 
-      let resultadoDaVez = {
-        texto: `${palavraAtualObjeto.dados.exibir} = ${correta}`,
+      let itemHistorico = {
+        texto: `${objetoAtual.exibir} = ${correta}`,
         cor: ""
       };
 
       if (opcao === correta) {
         btn.classList.add("correta");
         acertos++;
-        resultadoDaVez.cor = "#4CAF50";
+        itemHistorico.cor = "#4CAF50";
       } else {
         btn.classList.add("errada");
         erros++;
-        resultadoDaVez.cor = "#f44336";
+        itemHistorico.cor = "#f44336";
         todos.forEach(b => { if (b.textContent === correta) b.classList.add("correta"); });
       }
 
-      historicoResultados.push(resultadoDaVez);
+      historicoResultados.push(itemHistorico);
       setTimeout(proximaRodada, 1000);
     };
     opcoesContainer.appendChild(btn);
@@ -172,13 +163,11 @@ function criarOpcoes(chaveAtual) {
 function finalizarTeste() {
   palavraBox.textContent = "Teste finalizado!";
   opcoesContainer.style.display = "none";
-  
   historicoResultados.forEach(item => {
     const box = document.createElement("div");
     box.textContent = item.texto;
     box.style.cssText = `background:${item.cor}; color:white; padding:12px; border-radius:10px; font-weight:bold; margin-bottom: 8px;`;
     resultadosLista.appendChild(box);
   });
-
   btnReiniciar.style.display = "block";
 }
