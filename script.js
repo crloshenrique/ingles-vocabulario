@@ -7,7 +7,7 @@ const resultadosLista = document.getElementById("resultados-lista");
 const btnReiniciar = document.getElementById("btn-reiniciar");
 
 // Teste de atualização:
-document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 44</p>');
+document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Version 3.00.44</p>');
 
 const menuPrincipal = document.getElementById("menu-principal");
 const menuNiveis = document.getElementById("menu-niveis");
@@ -139,7 +139,7 @@ function criarOpcoes(objetoAtual) {
       }
 
       historicoResultados.push(itemHistorico);
-      setTimeout(proximaRodada, 1000);
+      setTimeout(proximaRodada, 1400);
     };
     opcoesContainer.appendChild(btn);
   });
