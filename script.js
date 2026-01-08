@@ -119,17 +119,23 @@ function criarOpcoes(palavraAtual) {
         .querySelectorAll(".opcao-btn")
         .forEach(b => (b.disabled = true));
 
-      const palavraLimpa =
+      const palavraFormatada =
         palavraAtual.charAt(0).toUpperCase() + palavraAtual.slice(1);
+
+      const traducoes = vocabulario[palavraAtual];
+      const traducaoAleatoria =
+        traducoes[Math.floor(Math.random() * traducoes.length)].significado;
+
+      const textoFinal = `${palavraFormatada} = ${traducaoAleatoria}`;
 
       if (opcao === correta) {
         btn.classList.add("correta");
         acertos++;
-        palavrasAcertadas.push(palavraLimpa);
+        palavrasAcertadas.push(textoFinal);
       } else {
         btn.classList.add("errada");
         erros++;
-        palavrasErradas.push(palavraLimpa);
+        palavrasErradas.push(textoFinal);
 
         document
           .querySelectorAll(".opcao-btn")
