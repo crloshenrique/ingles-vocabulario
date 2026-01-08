@@ -1,149 +1,116 @@
-const palavraBox = document.getElementById("palavra-box");
-const opcoesContainer = document.getElementById("opcoes-container");
-const acertosBox = document.getElementById("acertos-box");
-const errosBox = document.getElementById("erros-box");
-
-// ===============================
-// VOCABULÁRIO
-// ===============================
-let vocabulario = {};
-let palavras = [];
-
-fetch("vocabulario.txt")
-  .then(res => res.text())
-  .then(texto => {
-    const linhas = texto.split("\n");
-
-    linhas.forEach(linha => {
-      linha = linha.trim();
-      if (!linha || !linha.includes("=")) return;
-
-      const [esquerda, direita] = linha.split("=");
-
-      const match = esquerda.match(/^(.+?)(?:\s*\((.+?)\))?$/);
-      if (!match) return;
-
-      const palavra = match[1].trim().toLowerCase();
-      const pronuncia = match[2] ? match[2].trim() : "";
-
-      const significados = direita
-        .split("/")
-        .map(s => s.trim());
-
-      vocabulario[palavra] = significados.map(sig => ({
-        significado: sig,
-        pronuncia
-      }));
-    });
-
-    iniciarJogo();
-  });
-
-// ===============================
-// VARIÁVEIS
-// ===============================
-let i = 0;
-let acertos = 0;
-let erros = 0;
-
-// ===============================
-// FUNÇÕES
-// ===============================
-function iniciarJogo() {
-  palavras = Object.keys(vocabulario).sort(() => Math.random() - 0.5);
-  mostrarPalavra();
-}
-
-function atualizarContadores() {
-  acertosBox.textContent = acertos;
-  errosBox.textContent = erros;
-}
-
-function mostrarPalavra() {
-  if (i >= palavras.length) {
-    palavraBox.textContent = "Teste finalizado!";
-    opcoesContainer.innerHTML = "";
-    return;
-  }
-
-  const palavra = palavras[i];
-  const dados = vocabulario[palavra];
-  const pronuncia = dados[0].pronuncia;
-
-  const palavraExibir =
-    palavra.charAt(0).toUpperCase() + palavra.slice(1);
-
-  palavraBox.textContent = pronuncia
-    ? `${palavraExibir} (${pronuncia})`
-    : palavraExibir;
-
-  opcoesContainer.innerHTML = "";
-  criarOpcoes(palavra);
-  atualizarContadores();
-}
-
-function criarOpcoes(palavraAtual) {
-  const dados = vocabulario[palavraAtual];
-
-  // escolhe UMA tradução correta aleatória
-  const corretaObj = dados[Math.floor(Math.random() * dados.length)];
-  const correta = corretaObj.significado;
-
-  let opcoes = [correta];
-
-  // 4 opções no total, com limite de tentativas para evitar loop infinito
-  let tentativas = 0;
-  while (opcoes.length < 4 && tentativas < 20) {
-    tentativas++;
-    const palavraAleatoria =
-      palavras[Math.floor(Math.random() * palavras.length)];
-    if (palavraAleatoria === palavraAtual) continue;
-
-    const traducoes = vocabulario[palavraAleatoria];
-    const errada =
-      traducoes[Math.floor(Math.random() * traducoes.length)].significado;
-
-    if (!opcoes.includes(errada)) {
-      opcoes.push(errada);
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/png" href="icone.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Treino de Inglês</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
-  }
 
-  // se ainda faltar opções, repetir algumas para completar
-  while (opcoes.length < 4) {
-    opcoes.push(opcoes[0]);
-  }
+    #container {
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      padding: 0 15px; /* espaço lateral para celular */
+      box-sizing: border-box;
+    }
 
-  opcoes.sort(() => Math.random() - 0.5);
+    #palavra-box {
+      background-color: #666666;
+      color: white;
+      font-size: 2rem;
+      font-weight: bold;
+      padding: 0 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      margin-bottom: 20px;
+      height: 125px;       
+      display: flex;
+      align-items: center;      
+      justify-content: center; 
+      text-align: center;
+      line-height: 1.2;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      overflow-y: hidden;
+    }
 
-  opcoes.forEach(opcao => {
-    const btn = document.createElement("button");
-    btn.textContent = opcao;
-    btn.className = "opcao-btn";
 
-    btn.onclick = () => {
-      const botoes = document.querySelectorAll(".opcao-btn");
-      botoes.forEach(b => b.disabled = true);
 
-      if (opcao === correta) {
-        btn.classList.add("correta");
-        acertos++;
-      } else {
-        btn.classList.add("errada");
-        erros++;
+    #opcoes-container {
+      display: flex;
+      flex-wrap: wrap; /* permite quebrar linha */
+      gap: 10px; /* espaço entre os botões */
+      justify-content: space-between; /* distribui os botões igualmente */
+      margin-bottom: 20px; /* espaço entre botões e contador */
+    }
 
-        botoes.forEach(b => {
-          if (b.textContent === correta) {
-            b.classList.add("correta");
-          }
-        });
-      }
+    .opcao-btn {
+      width: calc(50% - 5px); /* metade da linha menos o gap */
+      padding: 14px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background-color: #d9d9d9;
+      color: #333;
+      transition: background-color 0.3s;
+    }
 
-      atualizarContadores();
-      i++;
+    .opcao-btn:disabled {
+      cursor: default;
+    }
 
-      setTimeout(mostrarPalavra, 1400);
-    };
+    .opcao-btn.correta {
+      background-color: #4CAF50;
+      color: white;
+    }
 
-    opcoesContainer.appendChild(btn);
-  });
-}
+    .opcao-btn.errada {
+      background-color: #f44336;
+      color: white;
+    }
+
+    #contador-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px; /* espaço entre acertos e erros */
+      margin-top: 20px; /* mais espaço acima do contador */
+    }
+
+    #acertos-box, #erros-box {
+      flex: 1;
+      padding: 12px;
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      border-radius: 12px;
+      margin: 0; /* remove margem lateral para alinhamento com botões */
+      box-sizing: border-box;
+    }
+
+    #acertos-box { background-color: #4CAF50; }
+    #erros-box { background-color: #f44336; }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="palavra-box">Carregando...</div>
+    <div id="opcoes-container"></div>
+    <div id="contador-container">
+      <div id="acertos-box">0</div>
+      <div id="erros-box">0</div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
