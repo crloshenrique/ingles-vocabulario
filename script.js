@@ -7,7 +7,7 @@ const resultadosLista = document.getElementById("resultados-lista");
 const btnReiniciar = document.getElementById("btn-reiniciar");
 
 // Apenas para testar se o Github atualizou:
-document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 23</p>');
+document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 027</p>');
 
 const menuPrincipal = document.getElementById("menu-principal");
 const menuNiveis = document.getElementById("menu-niveis");
@@ -16,8 +16,8 @@ const menuIntervalos = document.getElementById("menu-intervalos");
 let vocabulario = {};
 let ordemArquivo = [];
 let palavrasParaOJogo = [];
+let palavraAtualObjeto = null; // Armazena a palavra da rodada
 
-let i = 0;
 let acertos = 0;
 let erros = 0;
 let historicoResultados = []; 
@@ -28,7 +28,6 @@ let historicoResultados = [];
 fetch("vocabulario.txt")
   .then(res => res.text())
   .then(texto => {
-    // Carrega todas as 100 linhas garantindo que não pule nada
     const linhas = texto.split("\n").map(l => l.trim()).filter(l => l.includes("="));
     
     linhas.forEach(linha => {
@@ -58,14 +57,14 @@ function abrirMenuIntervalos() {
   menuIntervalos.style.display = "flex";
 }
 
+// Opções de 25, 50, 75 ou 100 palavras
 function iniciarNivel(qtd) {
-  // Pega exatamente a quantidade (Ex: 25)
   palavrasParaOJogo = ordemArquivo.slice(0, qtd);
   iniciarJogo();
 }
 
+// Opções de intervalos fixos
 function iniciarIntervalo(inicio, fim) {
-  // Pedaços de 25 em 25
   palavrasParaOJogo = ordemArquivo.slice(inicio, fim);
   iniciarJogo();
 }
@@ -81,40 +80,43 @@ function iniciarJogo() {
   opcoesContainer.style.display = "flex";
   contadorContainer.style.display = "flex";
 
-  // Embaralha
+  // Embaralha o bloco selecionado
   palavrasParaOJogo.sort(() => Math.random() - 0.5);
   
-  i = 0; 
   acertos = 0; 
   erros = 0;
   historicoResultados = []; 
   resultadosLista.innerHTML = "";
   btnReiniciar.style.display = "none";
   
-  mostrarPalavra();
+  proximaRodada();
 }
 
-function mostrarPalavra() {
-  // CORREÇÃO: O jogo só acaba se já tivermos respondido TODAS as palavras da lista
-  if (historicoResultados.length === palavrasParaOJogo.length) {
+function proximaRodada() {
+  // Se não houver mais palavras na lista, finaliza
+  if (palavrasParaOJogo.length === 0) {
     finalizarTeste();
     return;
   }
 
-  const chave = palavrasParaOJogo[i];
-  palavraBox.textContent = vocabulario[chave].exibir;
+  // Pega a PRÓXIMA palavra da lista (remove da lista original do jogo)
+  const chaveDavez = palavrasParaOJogo.shift();
+  palavraAtualObjeto = { chave: chaveDavez, dados: vocabulario[chaveDavez] };
+
+  palavraBox.textContent = palavraAtualObjeto.dados.exibir;
   opcoesContainer.innerHTML = "";
   
-  criarOpcoes(chave);
+  criarOpcoes(chaveDavez);
   acertosBox.textContent = acertos;
   errosBox.textContent = erros;
 }
 
-function criarOpcoes(palavraAtual) {
-  const corretaLista = vocabulario[palavraAtual].traducoes;
+function criarOpcoes(chaveAtual) {
+  const corretaLista = vocabulario[chaveAtual].traducoes;
   const correta = corretaLista[Math.floor(Math.random() * corretaLista.length)];
   let opcoes = [correta];
 
+  // Busca distrações nas 100 palavras do arquivo
   while (opcoes.length < 4) {
     const pAleatoria = ordemArquivo[Math.floor(Math.random() * ordemArquivo.length)];
     const errada = vocabulario[pAleatoria].traducoes[0];
@@ -132,7 +134,7 @@ function criarOpcoes(palavraAtual) {
       todos.forEach(b => b.disabled = true);
 
       let resultadoDaVez = {
-        texto: `${vocabulario[palavraAtual].exibir} = ${correta}`,
+        texto: `${palavraAtualObjeto.dados.exibir} = ${correta}`,
         cor: ""
       };
 
@@ -147,14 +149,8 @@ function criarOpcoes(palavraAtual) {
         todos.forEach(b => { if (b.textContent === correta) b.classList.add("correta"); });
       }
 
-      // 1. Salva o resultado
       historicoResultados.push(resultadoDaVez);
-      
-      // 2. Aumenta o contador para a próxima palavra
-      i++;
-      
-      // 3. Espera 1 segundo e chama a próxima palavra ou finaliza
-      setTimeout(mostrarPalavra, 1000);
+      setTimeout(proximaRodada, 1000);
     };
     opcoesContainer.appendChild(btn);
   });
