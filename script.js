@@ -6,7 +6,7 @@ const contador = document.getElementById("contador-container");
 const container = document.getElementById("container");
 
 // Linha para indicar atualização
-document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git2</p>');
+document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 2</p>');
 
 let vocabulario = {};
 let palavras = [];
