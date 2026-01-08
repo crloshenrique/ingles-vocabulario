@@ -10,16 +10,14 @@
     body {
       font-family: Arial, sans-serif;
       background-color: #f0f0f0;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start; /* 👈 CORREÇÃO */
       margin: 0;
-      padding-top: 30px;       /* 👈 espaço superior */
+      padding: 20px 0;
     }
 
     #container {
       width: 100%;
       max-width: 400px;
+      margin: 0 auto;
       text-align: center;
       padding: 0 15px 30px;
       box-sizing: border-box;
@@ -29,10 +27,6 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-    }
-
-    #menu h2 {
-      margin-bottom: 10px;
     }
 
     .menu-btn {
@@ -46,19 +40,17 @@
     }
 
     #palavra-box {
-      background-color: #666666;
+      background-color: #666;
       color: white;
       font-size: 2rem;
       font-weight: bold;
       padding: 0 20px;
       border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
       margin-bottom: 20px;
       height: 125px;
       display: none;
       align-items: center;
       justify-content: center;
-      text-align: center;
     }
 
     #opcoes-container {
@@ -77,7 +69,6 @@
       border: none;
       cursor: pointer;
       background-color: #d9d9d9;
-      color: #333;
     }
 
     .opcao-btn.correta {
@@ -92,9 +83,8 @@
 
     #contador-container {
       display: none;
-      justify-content: space-between;
       gap: 10px;
-      margin-top: 20px;
+      margin-top: 15px;
     }
 
     #acertos-box, #erros-box {
@@ -115,7 +105,7 @@
   <div id="container">
 
     <div id="menu">
-      <h2>Escolha o nível do teste</h2>
+      <h2>Escolha o nível</h2>
       <button class="menu-btn" onclick="iniciarComLimite(25)">Iniciante (25%)</button>
       <button class="menu-btn" onclick="iniciarComLimite(50)">Intermediário (50%)</button>
       <button class="menu-btn" onclick="iniciarComLimite(75)">Avançado (75%)</button>
