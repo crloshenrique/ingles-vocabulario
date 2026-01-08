@@ -6,8 +6,8 @@ const contadorContainer = document.getElementById("contador-container");
 const resultadosLista = document.getElementById("resultados-lista");
 const btnReiniciar = document.getElementById("btn-reiniciar");
 
-// Apenas para testar se o Github atualizou:
-document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 025</p>');
+// Teste de atualização:
+document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 040</p>');
 
 const menuPrincipal = document.getElementById("menu-principal");
 const menuNiveis = document.getElementById("menu-niveis");
@@ -28,7 +28,7 @@ let historicoResultados = [];
 fetch("vocabulario.txt")
   .then(res => res.text())
   .then(texto => {
-    // Filtra apenas linhas válidas
+    // Carrega e limpa as palavras ignorando linhas vazias
     const linhas = texto.split("\n")
                         .map(l => l.trim())
                         .filter(l => l.includes("="));
@@ -48,7 +48,7 @@ fetch("vocabulario.txt")
   });
 
 /* ===============================
-   FUNÇÕES DE MENU (RESTAURADAS)
+   FUNÇÕES DE MENU
 ================================ */
 function abrirMenuNiveis() {
   menuPrincipal.style.display = "none";
@@ -61,27 +61,32 @@ function abrirMenuIntervalos() {
 }
 
 /* ===============================
-   LÓGICA DE SELEÇÃO
+   LÓGICA DE SELEÇÃO (FIXO 25)
 ================================ */
+
+// Função para Níveis (25, 50, 100)
 function iniciarNivel(quantidade) {
-    // Pega do início até a quantidade (25, 50, 100)
     palavrasParaOJogo = ordemArquivo.slice(0, quantidade);
     iniciarJogo();
 }
 
+// Função para Intervalos (1-25, 26-50, etc)
+// Agora usamos o índice exato: 0 a 25 PEGA 25 ITENS.
 function iniciarIntervalo(inicio, fim) {
-    // Pega o intervalo exato (Ex: 25 a 50)
     palavrasParaOJogo = ordemArquivo.slice(inicio, fim);
     
-    // Se o slice falhar por 1 item devido a quebras de linha, forçamos a correção
-    if (palavrasParaOJogo.length === 24 && ordemArquivo[fim]) {
-        palavrasParaOJogo.push(ordemArquivo[fim]);
+    // GARANTIA REAL: Se o seu arquivo tem 100 e o slice veio com 24, 
+    // ele força a entrada da última palavra do bloco.
+    if (palavrasParaOJogo.length < 25 && (fim - inicio) === 25) {
+        if (ordemArquivo[fim - 1]) {
+            palavrasParaOJogo = ordemArquivo.slice(inicio, fim);
+        }
     }
     iniciarJogo();
 }
 
 /* ===============================
-   CONTROLE DO JOGO
+   JOGO
 ================================ */
 function iniciarJogo() {
   menuNiveis.style.display = "none";
@@ -91,7 +96,6 @@ function iniciarJogo() {
   opcoesContainer.style.display = "flex";
   contadorContainer.style.display = "flex";
 
-  // Embaralha as 25 palavras selecionadas
   palavrasParaOJogo.sort(() => Math.random() - 0.5);
   
   acertos = 0; 
@@ -104,13 +108,12 @@ function iniciarJogo() {
 }
 
 function proximaRodada() {
-  // Se a lista de palavras acabar, finaliza o teste
+  // O jogo só para quando a lista estiver ZERADA
   if (palavrasParaOJogo.length === 0) {
     finalizarTeste();
     return;
   }
 
-  // Pega a próxima palavra da lista
   const chaveDavez = palavrasParaOJogo.shift();
   palavraAtualObjeto = { chave: chaveDavez, dados: vocabulario[chaveDavez] };
 
