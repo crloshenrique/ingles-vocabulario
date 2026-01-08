@@ -7,7 +7,7 @@ const resultadosLista = document.getElementById("resultados-lista");
 const btnReiniciar = document.getElementById("btn-reiniciar");
 
 // Apenas para testar se o Github atualizou:
-document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 027</p>');
+document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 030</p>');
 
 const menuPrincipal = document.getElementById("menu-principal");
 const menuNiveis = document.getElementById("menu-niveis");
@@ -16,7 +16,7 @@ const menuIntervalos = document.getElementById("menu-intervalos");
 let vocabulario = {};
 let ordemArquivo = [];
 let palavrasParaOJogo = [];
-let palavraAtualObjeto = null; // Armazena a palavra da rodada
+let palavraAtualObjeto = null;
 
 let acertos = 0;
 let erros = 0;
@@ -28,7 +28,10 @@ let historicoResultados = [];
 fetch("vocabulario.txt")
   .then(res => res.text())
   .then(texto => {
-    const linhas = texto.split("\n").map(l => l.trim()).filter(l => l.includes("="));
+    // Filtra apenas linhas válidas para garantir que tenhamos exatamente 100
+    const linhas = texto.split("\n")
+                        .map(l => l.trim())
+                        .filter(l => l.includes("="));
     
     linhas.forEach(linha => {
       const [esquerda, direita] = linha.split("=");
@@ -45,28 +48,30 @@ fetch("vocabulario.txt")
   });
 
 /* ===============================
-   MENUS
+   NOVA LÓGICA DE SELEÇÃO POR BLOCO
 ================================ */
-function abrirMenuNiveis() {
-  menuPrincipal.style.display = "none";
-  menuNiveis.style.display = "flex";
+
+// Função para os botões de 25, 50, 75, 100 (Acumulado)
+function iniciarNivel(quantidade) {
+    palavrasParaOJogo = ordemArquivo.slice(0, quantidade);
+    iniciarJogo();
 }
 
-function abrirMenuIntervalos() {
-  menuPrincipal.style.display = "none";
-  menuIntervalos.style.display = "flex";
-}
+// Função para as 4 opções de blocos de 25 (Exclusivo)
+function escolherBloco(numeroDoBloco) {
+    // Bloco 1: 0 a 25 | Bloco 2: 25 a 50 | Bloco 3: 50 a 75 | Bloco 4: 75 a 100
+    const fim = numeroDoBloco * 25;
+    const inicio = fim - 25;
+    
+    palavrasParaOJogo = ordemArquivo.slice(inicio, fim);
+    
+    // Verificação de segurança: se o slice retornar 24 por erro de caractere invisível, 
+    // nós forçamos a busca do próximo índice se ele existir.
+    if (palavrasParaOJogo.length < 25 && ordemArquivo[fim]) {
+        palavrasParaOJogo.push(ordemArquivo[fim]);
+    }
 
-// Opções de 25, 50, 75 ou 100 palavras
-function iniciarNivel(qtd) {
-  palavrasParaOJogo = ordemArquivo.slice(0, qtd);
-  iniciarJogo();
-}
-
-// Opções de intervalos fixos
-function iniciarIntervalo(inicio, fim) {
-  palavrasParaOJogo = ordemArquivo.slice(inicio, fim);
-  iniciarJogo();
+    iniciarJogo();
 }
 
 /* ===============================
@@ -80,7 +85,6 @@ function iniciarJogo() {
   opcoesContainer.style.display = "flex";
   contadorContainer.style.display = "flex";
 
-  // Embaralha o bloco selecionado
   palavrasParaOJogo.sort(() => Math.random() - 0.5);
   
   acertos = 0; 
@@ -93,13 +97,11 @@ function iniciarJogo() {
 }
 
 function proximaRodada() {
-  // Se não houver mais palavras na lista, finaliza
   if (palavrasParaOJogo.length === 0) {
     finalizarTeste();
     return;
   }
 
-  // Pega a PRÓXIMA palavra da lista (remove da lista original do jogo)
   const chaveDavez = palavrasParaOJogo.shift();
   palavraAtualObjeto = { chave: chaveDavez, dados: vocabulario[chaveDavez] };
 
@@ -116,7 +118,6 @@ function criarOpcoes(chaveAtual) {
   const correta = corretaLista[Math.floor(Math.random() * corretaLista.length)];
   let opcoes = [correta];
 
-  // Busca distrações nas 100 palavras do arquivo
   while (opcoes.length < 4) {
     const pAleatoria = ordemArquivo[Math.floor(Math.random() * ordemArquivo.length)];
     const errada = vocabulario[pAleatoria].traducoes[0];
