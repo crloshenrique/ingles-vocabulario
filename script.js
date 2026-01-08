@@ -3,56 +3,56 @@ const opcoesContainer = document.getElementById("opcoes-container");
 const acertosBox = document.getElementById("acertos-box");
 const errosBox = document.getElementById("erros-box");
 const container = document.getElementById("container");
+const menu = document.getElementById("menu");
+const contadorContainer = document.getElementById("contador-container");
 
-// ===============================
-// VOCABULÁRIO
-// ===============================
 let vocabulario = {};
 let palavras = [];
+let limitePalavras = 100;
+
+let i = 0;
+let acertos = 0;
+let erros = 0;
+let palavrasAcertadas = [];
+let palavrasErradas = [];
 
 fetch("vocabulario.txt")
   .then(res => res.text())
   .then(texto => {
-    const linhas = texto.split("\n");
-
-    linhas.forEach(linha => {
+    texto.split("\n").forEach(linha => {
       linha = linha.trim();
-      if (!linha || linha.startsWith("#") || !linha.includes("=")) return;
+      if (!linha || !linha.includes("=")) return;
 
-      const [esquerda, direita] = linha.split("=");
-
-      const match = esquerda.match(/^(.+?)(?:\s*\((.+?)\))?$/);
-      if (!match) return;
+      const [esq, dir] = linha.split("=");
+      const match = esq.match(/^(.+?)(?:\s*\((.+?)\))?$/);
 
       const palavra = match[1].trim().toLowerCase();
-      const pronuncia = match[2] ? match[2].trim() : "";
+      const pronuncia = match[2] || "";
+      const significados = dir.split("/").map(s => s.trim());
 
-      const significados = direita.split("/").map(s => s.trim());
-
-      vocabulario[palavra] = significados.map(sig => ({
-        significado: sig,
+      vocabulario[palavra] = significados.map(s => ({
+        significado: s,
         pronuncia
       }));
     });
-
-    iniciarJogo();
   });
 
-// ===============================
-// VARIÁVEIS
-// ===============================
-let i = 0;
-let acertos = 0;
-let erros = 0;
+function iniciarComLimite(limite) {
+  limitePalavras = limite;
 
-let palavrasAcertadas = [];
-let palavrasErradas = [];
+  menu.style.display = "none";
+  palavraBox.style.display = "flex";
+  opcoesContainer.style.display = "flex";
+  contadorContainer.style.display = "flex";
 
-// ===============================
-// FUNÇÕES
-// ===============================
+  iniciarJogo();
+}
+
 function iniciarJogo() {
-  palavras = Object.keys(vocabulario).sort(() => Math.random() - 0.5);
+  palavras = Object.keys(vocabulario)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, limitePalavras);
+
   mostrarPalavra();
 }
 
@@ -71,14 +71,7 @@ function mostrarPalavra() {
 
   const palavra = palavras[i];
   const dados = vocabulario[palavra];
-  const pronuncia = dados[0].pronuncia;
-
-  const palavraExibir =
-    palavra.charAt(0).toUpperCase() + palavra.slice(1);
-
-  palavraBox.textContent = pronuncia
-    ? `${palavraExibir} (${pronuncia})`
-    : palavraExibir;
+  palavraBox.textContent = palavra.charAt(0).toUpperCase() + palavra.slice(1);
 
   opcoesContainer.innerHTML = "";
   criarOpcoes(palavra);
@@ -87,77 +80,58 @@ function mostrarPalavra() {
 
 function criarOpcoes(palavraAtual) {
   const dados = vocabulario[palavraAtual];
-  const correta = dados[Math.floor(Math.random() * dados.length)].significado;
+  const corretaObj = dados[Math.floor(Math.random() * dados.length)];
+  const correta = corretaObj.significado;
 
   let opcoes = [correta];
-  let tentativas = 0;
 
-  while (opcoes.length < 4 && tentativas < 20) {
-    tentativas++;
-    const palavraAleatoria =
-      palavras[Math.floor(Math.random() * palavras.length)];
-    if (palavraAleatoria === palavraAtual) continue;
+  while (opcoes.length < 4) {
+    const p = palavras[Math.floor(Math.random() * palavras.length)];
+    if (p === palavraAtual) continue;
 
-    const traducoes = vocabulario[palavraAleatoria];
     const errada =
-      traducoes[Math.floor(Math.random() * traducoes.length)].significado;
+      vocabulario[p][Math.floor(Math.random() * vocabulario[p].length)]
+        .significado;
 
     if (!opcoes.includes(errada)) opcoes.push(errada);
   }
-
-  while (opcoes.length < 4) opcoes.push(opcoes[0]);
 
   opcoes.sort(() => Math.random() - 0.5);
 
   opcoes.forEach(opcao => {
     const btn = document.createElement("button");
-    btn.textContent = opcao;
     btn.className = "opcao-btn";
+    btn.textContent = opcao;
 
     btn.onclick = () => {
-      document
-        .querySelectorAll(".opcao-btn")
-        .forEach(b => (b.disabled = true));
+      document.querySelectorAll(".opcao-btn").forEach(b => b.disabled = true);
 
-      const palavraFormatada =
+      const palavraLimpa =
         palavraAtual.charAt(0).toUpperCase() + palavraAtual.slice(1);
-
-      const traducoes = vocabulario[palavraAtual];
-      const traducaoAleatoria =
-        traducoes[Math.floor(Math.random() * traducoes.length)].significado;
-
-      const textoFinal = `${palavraFormatada} = ${traducaoAleatoria}`;
 
       if (opcao === correta) {
         btn.classList.add("correta");
         acertos++;
-        palavrasAcertadas.push(textoFinal);
+        palavrasAcertadas.push(
+          `${palavraLimpa} = ${correta}`
+        );
       } else {
         btn.classList.add("errada");
         erros++;
-        palavrasErradas.push(textoFinal);
-
-        document
-          .querySelectorAll(".opcao-btn")
-          .forEach(b => {
-            if (b.textContent === correta) {
-              b.classList.add("correta");
-            }
-          });
+        palavrasErradas.push(
+          `${palavraLimpa} = ${correta}`
+        );
       }
 
       atualizarContadores();
       i++;
-      setTimeout(mostrarPalavra, 1400);
+      setTimeout(mostrarPalavra, 1200);
     };
 
     opcoesContainer.appendChild(btn);
   });
 }
 
-// ===============================
-// RESULTADOS FINAIS
-// ===============================
 function mostrarResultados() {
   const lista = document.createElement("div");
   lista.style.display = "flex";
@@ -173,7 +147,7 @@ function mostrarResultados() {
     box.textContent = texto;
     box.style.flex = "1 1 45%";
     box.style.padding = "12px";
-    box.style.fontSize = "20px";
+    box.style.fontSize = "18px";
     box.style.fontWeight = "bold";
     box.style.color = "white";
     box.style.borderRadius = "12px";
