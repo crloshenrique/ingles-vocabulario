@@ -5,7 +5,7 @@ const errosBox = document.getElementById("erros-box");
 const container = document.getElementById("container");
 const menu = document.getElementById("menu");
 const contadorContainer = document.getElementById("contador-container");
-//.
+
 let vocabulario = {};
 let palavras = [];
 let limitePalavras = 100;
@@ -13,6 +13,7 @@ let limitePalavras = 100;
 let i = 0;
 let acertos = 0;
 let erros = 0;
+
 let palavrasAcertadas = [];
 let palavrasErradas = [];
 
@@ -27,13 +28,9 @@ fetch("vocabulario.txt")
       const match = esq.match(/^(.+?)(?:\s*\((.+?)\))?$/);
 
       const palavra = match[1].trim().toLowerCase();
-      const pronuncia = match[2] || "";
       const significados = dir.split("/").map(s => s.trim());
 
-      vocabulario[palavra] = significados.map(s => ({
-        significado: s,
-        pronuncia
-      }));
+      vocabulario[palavra] = significados;
     });
   });
 
@@ -70,8 +67,8 @@ function mostrarPalavra() {
   }
 
   const palavra = palavras[i];
-  const dados = vocabulario[palavra];
-  palavraBox.textContent = palavra.charAt(0).toUpperCase() + palavra.slice(1);
+  palavraBox.textContent =
+    palavra.charAt(0).toUpperCase() + palavra.slice(1);
 
   opcoesContainer.innerHTML = "";
   criarOpcoes(palavra);
@@ -79,9 +76,9 @@ function mostrarPalavra() {
 }
 
 function criarOpcoes(palavraAtual) {
-  const dados = vocabulario[palavraAtual];
-  const corretaObj = dados[Math.floor(Math.random() * dados.length)];
-  const correta = corretaObj.significado;
+  const traducoes = vocabulario[palavraAtual];
+  const correta =
+    traducoes[Math.floor(Math.random() * traducoes.length)];
 
   let opcoes = [correta];
 
@@ -90,8 +87,7 @@ function criarOpcoes(palavraAtual) {
     if (p === palavraAtual) continue;
 
     const errada =
-      vocabulario[p][Math.floor(Math.random() * vocabulario[p].length)]
-        .significado;
+      vocabulario[p][Math.floor(Math.random() * vocabulario[p].length)];
 
     if (!opcoes.includes(errada)) opcoes.push(errada);
   }
@@ -104,7 +100,8 @@ function criarOpcoes(palavraAtual) {
     btn.textContent = opcao;
 
     btn.onclick = () => {
-      document.querySelectorAll(".opcao-btn").forEach(b => b.disabled = true);
+      document.querySelectorAll(".opcao-btn")
+        .forEach(b => b.disabled = true);
 
       const palavraLimpa =
         palavraAtual.charAt(0).toUpperCase() + palavraAtual.slice(1);
@@ -112,15 +109,11 @@ function criarOpcoes(palavraAtual) {
       if (opcao === correta) {
         btn.classList.add("correta");
         acertos++;
-        palavrasAcertadas.push(
-          `${palavraLimpa} = ${correta}`
-        );
+        palavrasAcertadas.push(`${palavraLimpa} = ${correta}`);
       } else {
         btn.classList.add("errada");
         erros++;
-        palavrasErradas.push(
-          `${palavraLimpa} = ${correta}`
-        );
+        palavrasErradas.push(`${palavraLimpa} = ${correta}`);
       }
 
       atualizarContadores();
