@@ -5,6 +5,8 @@ const errosBox = document.getElementById("erros-box");
 const contador = document.getElementById("contador-container");
 const container = document.getElementById("container");
 
+console.log("1")
+
 let vocabulario = {};
 let palavras = [];
 let limiteInicio = 0;
@@ -48,6 +50,12 @@ function abrirMenuNiveis() {
 function abrirMenuIntervalos() {
   document.getElementById("menu-principal").style.display = "none";
   document.getElementById("menu-intervalos").style.display = "flex";
+}
+
+function voltarMenuPrincipal() {
+  document.getElementById("menu-principal").style.display = "flex";
+  document.getElementById("menu-niveis").style.display = "none";
+  document.getElementById("menu-intervalos").style.display = "none";
 }
 
 // ===============================
