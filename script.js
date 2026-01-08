@@ -33,11 +33,8 @@ fetch("vocabulario.txt")
       if (!linha || !linha.includes("=")) return;
 
       const partes = linha.split("=");
-      const esquerda = partes[0];
-      const direita = partes[1];
-
-      const palavra = esquerda.replace(/\(.*?\)/, "").trim().toLowerCase();
-      const traducoes = direita.split("/").map(t => t.trim());
+      const palavra = partes[0].replace(/\(.*?\)/, "").trim().toLowerCase();
+      const traducoes = partes[1].split("/").map(t => t.trim());
 
       vocabulario[palavra] = traducoes;
       ordemArquivo.push(palavra);
@@ -76,7 +73,6 @@ function iniciarIntervalo(inicio, fim) {
 function iniciarJogo() {
   menuNiveis.style.display = "none";
   menuIntervalos.style.display = "none";
-  menuPrincipal.style.display = "none";
 
   palavraBox.style.display = "flex";
   opcoesContainer.style.display = "flex";
@@ -90,9 +86,6 @@ function iniciarJogo() {
   palavrasAcertadas = [];
   palavrasErradas = [];
 
-  atualizarContadores();
-  opcoesContainer.innerHTML = "";
-
   mostrarPalavra();
 }
 
@@ -103,23 +96,9 @@ function atualizarContadores() {
 
 function mostrarPalavra() {
   if (i >= palavras.length) {
-    // FINAL DO TESTE
     palavraBox.textContent = "Teste finalizado!";
-    palavraBox.style.display = "flex";
     opcoesContainer.innerHTML = "";
-    opcoesContainer.style.display = "none";
-    contadorContainer.style.display = "flex";
     atualizarContadores();
-
-    mostrarResultados();
-
-    // Reexibir menu principal após 1,2s
-    setTimeout(() => {
-      menuPrincipal.style.display = "flex";
-      menuNiveis.style.display = "none";
-      menuIntervalos.style.display = "none";
-    }, 1200);
-
     return;
   }
 
@@ -147,61 +126,4 @@ function criarOpcoes(palavraAtual) {
 
   opcoes.sort(() => Math.random() - 0.5);
 
-  opcoes.forEach(opcao => {
-    const btn = document.createElement("button");
-    btn.className = "opcao-btn";
-    btn.textContent = opcao;
-
-    btn.onclick = () => {
-      document.querySelectorAll(".opcao-btn").forEach(b => b.disabled = true);
-
-      const palavraFormatada = palavraAtual.charAt(0).toUpperCase() + palavraAtual.slice(1);
-
-      if (opcao === correta) {
-        btn.classList.add("correta");
-        acertos++;
-        palavrasAcertadas.push(palavraFormatada + " = " + correta);
-      } else {
-        btn.classList.add("errada");
-        erros++;
-        palavrasErradas.push(palavraFormatada + " = " + correta);
-      }
-
-      atualizarContadores();
-      i++;
-      setTimeout(mostrarPalavra, 1200);
-    };
-
-    opcoesContainer.appendChild(btn);
-  });
-}
-
-/* ===============================
-   RESULTADOS
-================================ */
-function mostrarResultados() {
-  const lista = document.createElement("div");
-  lista.style.display = "flex";
-  lista.style.flexWrap = "wrap";
-  lista.style.gap = "10px";
-  lista.style.marginTop = "15px";
-
-  palavrasAcertadas.forEach(p => criarBox(p, "#4CAF50"));
-  palavrasErradas.forEach(p => criarBox(p, "#f44336"));
-
-  function criarBox(texto, cor) {
-    const box = document.createElement("div");
-    box.textContent = texto;
-    box.style.flex = "1 1 45%";
-    box.style.padding = "12px";
-    box.style.fontSize = "18px";
-    box.style.fontWeight = "bold";
-    box.style.color = "white";
-    box.style.borderRadius = "12px";
-    box.style.backgroundColor = cor;
-    box.style.textAlign = "center";
-    lista.appendChild(box);
-  }
-
-  document.getElementById("container").appendChild(lista);
-}
+  opcoes.forEach(opca
