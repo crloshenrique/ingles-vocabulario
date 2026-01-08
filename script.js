@@ -2,7 +2,7 @@ const palavraBox = document.getElementById("palavra-box");
 const opcoesContainer = document.getElementById("opcoes-container");
 const acertosBox = document.getElementById("acertos-box");
 const errosBox = document.getElementById("erros-box");
-const resultadoContainer = document.getElementById("resultado-palavras");
+const container = document.getElementById("container");
 
 // ===============================
 // VOCABULÁRIO
@@ -17,7 +17,7 @@ fetch("vocabulario.txt")
 
     linhas.forEach(linha => {
       linha = linha.trim();
-      if (!linha || !linha.includes("=")) return;
+      if (!linha || linha.startsWith("#") || !linha.includes("=")) return;
 
       const [esquerda, direita] = linha.split("=");
 
@@ -27,9 +27,7 @@ fetch("vocabulario.txt")
       const palavra = match[1].trim().toLowerCase();
       const pronuncia = match[2] ? match[2].trim() : "";
 
-      const significados = direita
-        .split("/")
-        .map(s => s.trim());
+      const significados = direita.split("/").map(s => s.trim());
 
       vocabulario[palavra] = significados.map(sig => ({
         significado: sig,
@@ -89,9 +87,7 @@ function mostrarPalavra() {
 
 function criarOpcoes(palavraAtual) {
   const dados = vocabulario[palavraAtual];
-
-  const corretaObj = dados[Math.floor(Math.random() * dados.length)];
-  const correta = corretaObj.significado;
+  const correta = dados[Math.floor(Math.random() * dados.length)].significado;
 
   let opcoes = [correta];
   let tentativas = 0;
@@ -106,14 +102,10 @@ function criarOpcoes(palavraAtual) {
     const errada =
       traducoes[Math.floor(Math.random() * traducoes.length)].significado;
 
-    if (!opcoes.includes(errada)) {
-      opcoes.push(errada);
-    }
+    if (!opcoes.includes(errada)) opcoes.push(errada);
   }
 
-  while (opcoes.length < 4) {
-    opcoes.push(opcoes[0]);
-  }
+  while (opcoes.length < 4) opcoes.push(opcoes[0]);
 
   opcoes.sort(() => Math.random() - 0.5);
 
@@ -123,8 +115,9 @@ function criarOpcoes(palavraAtual) {
     btn.className = "opcao-btn";
 
     btn.onclick = () => {
-      const botoes = document.querySelectorAll(".opcao-btn");
-      botoes.forEach(b => b.disabled = true);
+      document
+        .querySelectorAll(".opcao-btn")
+        .forEach(b => (b.disabled = true));
 
       const palavraLimpa =
         palavraAtual.charAt(0).toUpperCase() + palavraAtual.slice(1);
@@ -138,11 +131,13 @@ function criarOpcoes(palavraAtual) {
         erros++;
         palavrasErradas.push(palavraLimpa);
 
-        botoes.forEach(b => {
-          if (b.textContent === correta) {
-            b.classList.add("correta");
-          }
-        });
+        document
+          .querySelectorAll(".opcao-btn")
+          .forEach(b => {
+            if (b.textContent === correta) {
+              b.classList.add("correta");
+            }
+          });
       }
 
       atualizarContadores();
@@ -155,24 +150,31 @@ function criarOpcoes(palavraAtual) {
 }
 
 // ===============================
-// RESULTADO FINAL
+// RESULTADOS FINAIS
 // ===============================
 function mostrarResultados() {
-  resultadoContainer.innerHTML = "";
+  const lista = document.createElement("div");
+  lista.style.display = "flex";
+  lista.style.flexWrap = "wrap";
+  lista.style.gap = "10px";
+  lista.style.marginTop = "15px";
 
-  palavrasAcertadas.forEach(palavra => {
-    const box = document.createElement("div");
-    box.textContent = palavra;
-    box.className = "resultado-box";
-    box.style.backgroundColor = "#4CAF50";
-    resultadoContainer.appendChild(box);
-  });
+  palavrasAcertadas.forEach(p => criarBox(p, "#4CAF50"));
+  palavrasErradas.forEach(p => criarBox(p, "#f44336"));
 
-  palavrasErradas.forEach(palavra => {
+  function criarBox(texto, cor) {
     const box = document.createElement("div");
-    box.textContent = palavra;
-    box.className = "resultado-box";
-    box.style.backgroundColor = "#f44336";
-    resultadoContainer.appendChild(box);
-  });
+    box.textContent = texto;
+    box.style.flex = "1 1 45%";
+    box.style.padding = "12px";
+    box.style.fontSize = "20px";
+    box.style.fontWeight = "bold";
+    box.style.color = "white";
+    box.style.borderRadius = "12px";
+    box.style.backgroundColor = cor;
+    box.style.textAlign = "center";
+    lista.appendChild(box);
+  }
+
+  container.appendChild(lista);
 }
