@@ -4,8 +4,8 @@ const acertosBox = document.getElementById("acertos-box");
 const errosBox = document.getElementById("erros-box");
 const contadorContainer = document.getElementById("contador-container");
 
-// Para testar se o JS atualizou
-document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 009</p>');
+// Para teste de atualização
+document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 010</p>');
 
 const menuPrincipal = document.getElementById("menu-principal");
 const menuNiveis = document.getElementById("menu-niveis");
@@ -76,6 +76,7 @@ function iniciarIntervalo(inicio, fim) {
 function iniciarJogo() {
   menuNiveis.style.display = "none";
   menuIntervalos.style.display = "none";
+  menuPrincipal.style.display = "none";
 
   palavraBox.style.display = "flex";
   opcoesContainer.style.display = "flex";
@@ -109,7 +110,16 @@ function mostrarPalavra() {
     opcoesContainer.style.display = "none";
     contadorContainer.style.display = "flex";
     atualizarContadores();
+
     mostrarResultados();
+
+    // Reexibir menu principal após 1,2s
+    setTimeout(() => {
+      menuPrincipal.style.display = "flex";
+      menuNiveis.style.display = "none";
+      menuIntervalos.style.display = "none";
+    }, 1200);
+
     return;
   }
 
