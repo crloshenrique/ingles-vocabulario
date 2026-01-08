@@ -7,7 +7,7 @@ const resultadosLista = document.getElementById("resultados-lista");
 const btnReiniciar = document.getElementById("btn-reiniciar");
 
 // Apenas para testar se o Github atualizou:
-document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 030</p>');
+document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 025</p>');
 
 const menuPrincipal = document.getElementById("menu-principal");
 const menuNiveis = document.getElementById("menu-niveis");
@@ -28,7 +28,7 @@ let historicoResultados = [];
 fetch("vocabulario.txt")
   .then(res => res.text())
   .then(texto => {
-    // Filtra apenas linhas válidas para garantir que tenhamos exatamente 100
+    // Filtra apenas linhas válidas
     const linhas = texto.split("\n")
                         .map(l => l.trim())
                         .filter(l => l.includes("="));
@@ -48,34 +48,40 @@ fetch("vocabulario.txt")
   });
 
 /* ===============================
-   NOVA LÓGICA DE SELEÇÃO POR BLOCO
+   FUNÇÕES DE MENU (RESTAURADAS)
 ================================ */
+function abrirMenuNiveis() {
+  menuPrincipal.style.display = "none";
+  menuNiveis.style.display = "flex";
+}
 
-// Função para os botões de 25, 50, 75, 100 (Acumulado)
+function abrirMenuIntervalos() {
+  menuPrincipal.style.display = "none";
+  menuIntervalos.style.display = "flex";
+}
+
+/* ===============================
+   LÓGICA DE SELEÇÃO
+================================ */
 function iniciarNivel(quantidade) {
+    // Pega do início até a quantidade (25, 50, 100)
     palavrasParaOJogo = ordemArquivo.slice(0, quantidade);
     iniciarJogo();
 }
 
-// Função para as 4 opções de blocos de 25 (Exclusivo)
-function escolherBloco(numeroDoBloco) {
-    // Bloco 1: 0 a 25 | Bloco 2: 25 a 50 | Bloco 3: 50 a 75 | Bloco 4: 75 a 100
-    const fim = numeroDoBloco * 25;
-    const inicio = fim - 25;
-    
+function iniciarIntervalo(inicio, fim) {
+    // Pega o intervalo exato (Ex: 25 a 50)
     palavrasParaOJogo = ordemArquivo.slice(inicio, fim);
     
-    // Verificação de segurança: se o slice retornar 24 por erro de caractere invisível, 
-    // nós forçamos a busca do próximo índice se ele existir.
-    if (palavrasParaOJogo.length < 25 && ordemArquivo[fim]) {
+    // Se o slice falhar por 1 item devido a quebras de linha, forçamos a correção
+    if (palavrasParaOJogo.length === 24 && ordemArquivo[fim]) {
         palavrasParaOJogo.push(ordemArquivo[fim]);
     }
-
     iniciarJogo();
 }
 
 /* ===============================
-   JOGO
+   CONTROLE DO JOGO
 ================================ */
 function iniciarJogo() {
   menuNiveis.style.display = "none";
@@ -85,6 +91,7 @@ function iniciarJogo() {
   opcoesContainer.style.display = "flex";
   contadorContainer.style.display = "flex";
 
+  // Embaralha as 25 palavras selecionadas
   palavrasParaOJogo.sort(() => Math.random() - 0.5);
   
   acertos = 0; 
@@ -97,11 +104,13 @@ function iniciarJogo() {
 }
 
 function proximaRodada() {
+  // Se a lista de palavras acabar, finaliza o teste
   if (palavrasParaOJogo.length === 0) {
     finalizarTeste();
     return;
   }
 
+  // Pega a próxima palavra da lista
   const chaveDavez = palavrasParaOJogo.shift();
   palavraAtualObjeto = { chave: chaveDavez, dados: vocabulario[chaveDavez] };
 
