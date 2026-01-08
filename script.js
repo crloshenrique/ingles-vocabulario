@@ -5,7 +5,8 @@ const errosBox = document.getElementById("erros-box");
 const contador = document.getElementById("contador-container");
 const container = document.getElementById("container");
 
-console.log("1")
+document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git atualizado!</p>');
+
 
 let vocabulario = {};
 let palavras = [];
