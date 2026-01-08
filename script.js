@@ -6,14 +6,14 @@ const contadorContainer = document.getElementById("contador-container");
 const resultadosLista = document.getElementById("resultados-lista");
 const btnReiniciar = document.getElementById("btn-reiniciar");
 
-// Atualizado conforme solicitado: Git 25
-document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 43</p>');
+// Teste de atualização:
+document.getElementById("menu-principal").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Git 44</p>');
 
 const menuPrincipal = document.getElementById("menu-principal");
 const menuNiveis = document.getElementById("menu-niveis");
 const menuIntervalos = document.getElementById("menu-intervalos");
 
-let vocabulario = []; // Mudamos para Array para evitar erro de chaves
+let vocabulario = []; 
 let palavrasParaOJogo = [];
 let palavraAtualObjeto = null;
 
@@ -36,7 +36,6 @@ fetch("vocabulario.txt")
       const exibir = esquerda.trim();
       const traducoes = direita.split("/").map(t => t.trim());
 
-      // Guardamos tudo em um único array de objetos
       vocabulario.push({
         exibir: exibir,
         correta: traducoes[0],
@@ -49,9 +48,6 @@ fetch("vocabulario.txt")
     document.getElementById("btn-intervalos").style.display = "block";
   });
 
-/* ===============================
-   FUNÇÕES DE MENU
-================================ */
 function abrirMenuNiveis() {
   menuPrincipal.style.display = "none";
   menuNiveis.style.display = "flex";
@@ -62,24 +58,16 @@ function abrirMenuIntervalos() {
   menuIntervalos.style.display = "flex";
 }
 
-/* ===============================
-   LÓGICA DE SELEÇÃO
-================================ */
-
 function iniciarNivel(quantidade) {
     palavrasParaOJogo = vocabulario.slice(0, quantidade);
     iniciarJogo();
 }
 
 function iniciarIntervalo(inicio, fim) {
-    // Aqui o slice(0, 25) pega exatamente do 0 ao 24.
     palavrasParaOJogo = vocabulario.slice(inicio, fim);
     iniciarJogo();
 }
 
-/* ===============================
-   JOGO
-================================ */
 function iniciarJogo() {
   menuNiveis.style.display = "none";
   menuIntervalos.style.display = "none";
@@ -87,11 +75,12 @@ function iniciarJogo() {
   opcoesContainer.style.display = "flex";
   contadorContainer.style.display = "flex";
 
-  // Embaralha o bloco selecionado
   palavrasParaOJogo.sort(() => Math.random() - 0.5);
   
   acertos = 0; 
   erros = 0;
+  acertosBox.textContent = "0";
+  errosBox.textContent = "0";
   historicoResultados = []; 
   resultadosLista.innerHTML = "";
   btnReiniciar.style.display = "none";
@@ -105,22 +94,16 @@ function proximaRodada() {
     return;
   }
 
-  // Pega o objeto inteiro da lista
   palavraAtualObjeto = palavrasParaOJogo.shift();
-
   palavraBox.textContent = palavraAtualObjeto.exibir;
   opcoesContainer.innerHTML = "";
-  
   criarOpcoes(palavraAtualObjeto);
-  acertosBox.textContent = acertos;
-  errosBox.textContent = erros;
 }
 
 function criarOpcoes(objetoAtual) {
   const correta = objetoAtual.correta;
   let opcoes = [correta];
 
-  // Pega distrações do vocabulário total
   while (opcoes.length < 4) {
     const sorteio = vocabulario[Math.floor(Math.random() * vocabulario.length)];
     const distracao = sorteio.correta;
@@ -145,10 +128,12 @@ function criarOpcoes(objetoAtual) {
       if (opcao === correta) {
         btn.classList.add("correta");
         acertos++;
+        acertosBox.textContent = acertos; // Atualiza placar na hora
         itemHistorico.cor = "#4CAF50";
       } else {
         btn.classList.add("errada");
         erros++;
+        errosBox.textContent = erros; // Atualiza placar na hora
         itemHistorico.cor = "#f44336";
         todos.forEach(b => { if (b.textContent === correta) b.classList.add("correta"); });
       }
