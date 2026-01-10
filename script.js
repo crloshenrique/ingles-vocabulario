@@ -1,200 +1,82 @@
-// Test line: Verified compatibility check - 2026-01-09
-const palavraBox = document.getElementById("palavra-box");
-const opcoesContainer = document.getElementById("opcoes-container");
-const acertosBox = document.getElementById("acertos-box");
-const errosBox = document.getElementById("erros-box");
-const contadorContainer = document.getElementById("contador-container");
-const resultadosLista = document.getElementById("resultados-lista");
-const btnReiniciar = document.getElementById("btn-reiniciar");
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Treino de Inglês</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* ESTILOS GERAIS */
+        body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; box-sizing: border-box; }
+        #container { width: 100%; max-width: 400px; text-align: center; position: relative; }
+        .menu { display: flex; flex-direction: column; gap: 12px; width: 100%; }
 
-const menuTemas = document.getElementById("menu-temas");
-const menuPrincipal = document.getElementById("menu-principal");
-const menuNiveis = document.getElementById("menu-niveis");
-const menuIntervalos = document.getElementById("menu-intervalos");
-const listaTemasBotoes = document.getElementById("lista-temas-botoes");
+        /* BOTÕES */
+        button { padding: 14px; font-size: 18px; border-radius: 10px; border: none; cursor: pointer; background: #5e5e5e; color: white; transition: opacity 0.2s; -webkit-tap-highlight-color: transparent; }
+        button:active { opacity: 0.8; }
 
-// Teste de atualização solicitado:
-document.getElementById("menu-temas").insertAdjacentHTML('beforeend', '<p style="color:#999; font-size:0.9rem;">Version 0.58</p>');
+        /* BOX DA PALAVRA E OPÇÕES */
+        #palavra-box { background: #5e5e5e; color: white; font-size: 1.8rem; font-weight: bold; height: 125px; border-radius: 15px; display: none; align-items: center; justify-content: center; margin-bottom: 20px; padding: 10px; }
+        #opcoes-container { display: none; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .opcao-btn { width: calc(50% - 5px); background: #d9d9d9; color: #5e5e5e; }
 
-// ==========================================
-// CONFIGURAÇÃO DE DICIONÁRIOS
-// ==========================================
-const meusDicionarios = ["verbos"]; 
+        /* CORES DE RESPOSTA */
+        .correta { background: #4CAF50 !important; color: white; }
+        .errada { background: #f44336 !important; color: white; }
 
-let vocabulario = []; 
-let palavrasParaOJogo = [];
-let palavraAtualObjeto = null;
-let acertos = 0;
-let erros = 0;
-let historicoResultados = []; 
+        /* PLACAR E RESULTADOS */
+        #contador-container { display: none; gap: 10px; margin-bottom: 20px; }
+        #acertos-box, #erros-box { flex: 1; padding: 12px; font-size: 20px; font-weight: bold; color: white; border-radius: 12px; }
+        #acertos-box { background: #4CAF50; }
+        #erros-box { background: #f44336; }
+        #btn-reiniciar { display: none; width: 100%; background: #5e5e5e; margin-top: 15px; }
+        #resultados-lista { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        h2 { color: #444; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
 
-window.onload = gerarMenuTemas;
+    <div id="container">
 
-function gerarMenuTemas() {
-    listaTemasBotoes.innerHTML = "";
-    meusDicionarios.forEach(tema => {
-        const btn = document.createElement("button");
-        btn.textContent = tema.charAt(0).toUpperCase() + tema.slice(1); // Exibe bonito, mas carrega minúsculo
-        btn.style.background = "#10a2dd"; 
-        btn.onclick = () => carregarVocabulario(tema);
-        listaTemasBotoes.appendChild(btn);
-    });
-}
+        <div id="menu-temas" class="menu">
+            <h2>Escolha um dicionário</h2>
+            <div id="lista-temas-botoes" class="menu"></div>
+        </div>
 
-function carregarVocabulario(arquivo) {
-    const statusLoad = document.getElementById("status-load");
-    statusLoad.style.display = "block";
-    statusLoad.textContent = `Carregando ${arquivo}...`;
-    
-    vocabulario = []; 
+        <div id="menu-principal" class="menu" style="display:none">
+            <h2>Como deseja praticar?</h2>
+            <p id="status-load" style="display:none">Carregando...</p>
+            <button id="btn-intervalos" onclick="abrirMenuIntervalos()" style="background:#10a2dd;">Escolher palavras</button>
+            <button id="btn-niveis" onclick="abrirMenuNiveis()" style="background:#10a2dd;">Jogar por níveis</button>
+            <button onclick="window.location.reload()" style="background:#5e5e5e;">Voltar</button>
+        </div>
 
-    // Caminho corrigido para pasta sem acento e minúscula
-    fetch(`dicionarios/${arquivo}.txt`)
-        .then(res => {
-            if(!res.ok) throw new Error("Arquivo não encontrado");
-            return res.text();
-        })
-        .then(texto => {
-            // RegEx corrigido para aceitar quebras de linha Windows e Unix
-            const linhas = texto.split(/\r?\n/)
-                                .map(l => l.trim())
-                                .filter(l => l !== "" && l.includes("="));
-            
-            linhas.forEach(linha => {
-                const [esquerda, direita] = linha.split("=");
-                const exibir = esquerda.trim();
-                const traducoes = direita.split("/").map(t => t.trim());
+        <div id="menu-niveis" class="menu" style="display:none">
+            <button onclick="iniciarNivel(25)" style="background: #10a2dd;">Iniciante</button>
+            <button onclick="iniciarNivel(50)" style="background: #5abb6a;">Intermediário</button>
+            <button onclick="iniciarNivel(75)" style="background: #f99c35;">Avançado</button>
+            <button onclick="iniciarNivel(vocabulario.length)" style="background: #f14738;">Pro</button>
+            <button onclick="voltarAoPrincipal()" style="background:#5e5e5e;">Voltar</button>
+        </div>
 
-                vocabulario.push({
-                    exibir: exibir,
-                    correta: traducoes[0],
-                    todas: traducoes
-                });
-            });
+        <div id="menu-intervalos" class="menu" style="display:none">
+            <button onclick="iniciarIntervalo(0,25)" style="background: #10a2dd;">1 ⮕ 25 palavras</button>
+            <button onclick="iniciarIntervalo(25,50)" style="background: #5abb6a;">26 ⮕ 50 palavras</button>
+            <button onclick="iniciarIntervalo(50,75)" style="background: #f99c35;">51 ⮕ 75 palavras</button>
+            <button onclick="iniciarIntervalo(75,100)" style="background: #f14738;">76 ⮕ 100 palavras</button>
+            <button onclick="voltarAoPrincipal()" style="background:#5e5e5e;">Voltar</button>
+        </div>
 
-            menuTemas.style.display = "none";
-            menuPrincipal.style.display = "flex";
-            statusLoad.style.display = "none";
-        })
-        .catch(err => {
-            statusLoad.textContent = "Erro ao carregar dicionário!";
-            console.error(err);
-        });
-}
+        <div id="palavra-box"></div>
+        <div id="opcoes-container"></div>
+        <div id="contador-container">
+            <div id="acertos-box">0</div>
+            <div id="erros-box">0</div>
+        </div>
+        <div id="resultados-lista"></div>
+        <button id="btn-reiniciar" onclick="window.location.reload()">Jogar Novamente</button>
 
-function abrirMenuNiveis() {
-    menuPrincipal.style.display = "none";
-    menuNiveis.style.display = "flex";
-}
+    </div>
 
-function abrirMenuIntervalos() {
-    menuPrincipal.style.display = "none";
-    menuIntervalos.style.display = "flex";
-}
-
-function voltarAoPrincipal() {
-    menuNiveis.style.display = "none";
-    menuIntervalos.style.display = "none";
-    menuPrincipal.style.display = "flex";
-}
-
-function iniciarNivel(quantidade) {
-    palavrasParaOJogo = vocabulario.slice(0, quantidade);
-    iniciarJogo();
-}
-
-function iniciarIntervalo(inicio, fim) {
-    palavrasParaOJogo = vocabulario.slice(inicio, fim);
-    iniciarJogo();
-}
-
-function iniciarJogo() {
-    if (palavrasParaOJogo.length === 0) return;
-
-    menuNiveis.style.display = "none";
-    menuIntervalos.style.display = "none";
-    palavraBox.style.display = "flex";
-    opcoesContainer.style.display = "flex";
-    contadorContainer.style.display = "flex";
-
-    palavrasParaOJogo.sort(() => Math.random() - 0.5);
-    
-    acertos = 0; 
-    erros = 0;
-    acertosBox.textContent = "0";
-    errosBox.textContent = "0";
-    historicoResultados = []; 
-    resultadosLista.innerHTML = "";
-    btnReiniciar.style.display = "none";
-    
-    proximaRodada();
-}
-
-function proximaRodada() {
-    if (palavrasParaOJogo.length === 0) {
-        finalizarTeste();
-        return;
-    }
-
-    palavraAtualObjeto = palavrasParaOJogo.shift();
-    palavraBox.textContent = palavraAtualObjeto.exibir;
-    opcoesContainer.innerHTML = "";
-    criarOpcoes(palavraAtualObjeto);
-}
-
-function criarOpcoes(objetoAtual) {
-    const correta = objetoAtual.correta;
-    let opcoes = [correta];
-
-    while (opcoes.length < 4) {
-        const sorteio = vocabulario[Math.floor(Math.random() * vocabulario.length)];
-        const distracao = sorteio.correta;
-        if (!opcoes.includes(distracao)) opcoes.push(distracao);
-    }
-
-    opcoes.sort(() => Math.random() - 0.5);
-
-    opcoes.forEach(opcao => {
-        const btn = document.createElement("button");
-        btn.className = "opcao-btn";
-        btn.textContent = opcao;
-        btn.onclick = () => {
-            const todos = document.querySelectorAll(".opcao-btn");
-            todos.forEach(b => b.disabled = true);
-
-            let itemHistorico = {
-                texto: `${objetoAtual.exibir} = ${correta}`,
-                cor: ""
-            };
-
-            if (opcao === correta) {
-                btn.classList.add("correta");
-                acertos++;
-                acertosBox.textContent = acertos;
-                itemHistorico.cor = "#4CAF50";
-            } else {
-                btn.classList.add("errada");
-                erros++;
-                errosBox.textContent = erros;
-                itemHistorico.cor = "#f44336";
-                todos.forEach(b => { if (b.textContent === correta) b.classList.add("correta"); });
-            }
-
-            historicoResultados.push(itemHistorico);
-            setTimeout(proximaRodada, 1400);
-        };
-        opcoesContainer.appendChild(btn);
-    });
-}
-
-function finalizarTeste() {
-    palavraBox.textContent = "Teste finalizado!";
-    opcoesContainer.style.display = "none";
-    historicoResultados.forEach(item => {
-        const box = document.createElement("div");
-        box.textContent = item.texto;
-        box.style.cssText = `background:${item.cor}; color:white; padding:12px; border-radius:10px; font-weight:bold; margin-bottom: 8px;`;
-        resultadosLista.appendChild(box);
-    });
-    btnReiniciar.style.display = "block";
-}
+    <script src="script.js"></script>
+</body>
+</html>
